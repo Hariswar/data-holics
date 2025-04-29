@@ -10,7 +10,7 @@
 
 ### Database Migration
 
-- Database migration should not be necessary because all changes made to our database setup will be done in SQL. 
+- Full database migration should not be necessary because all changes made to our database setup will be done in SQL. 
 
 ## Creating Models, Pages, and Database Functions
 
