@@ -6,7 +6,7 @@ CREATE TABLE leaguify_sport (
 
 CREATE TABLE leaguify_team (
     teamID INT PRIMARY KEY,
-    teamName VARCHAR(32) NOT NULL,
+    teamName VARCHAR(82) NOT NULL,
     sportID INT,
     FOREIGN KEY (sportID) REFERENCES leaguify_sport(sportID) ON DELETE CASCADE ON UPDATE CASCADE
 );
