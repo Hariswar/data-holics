@@ -3,16 +3,55 @@ from django.http import HttpResponse
 from django.template import loader
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_protect
-
+from django.contrib.auth import authenticate, login, logout
 from .models import *
+from .forms import *
 
 # Create your views here.
 
 # --- HTML PAGE VIEWS ---
 
 # TEST PAGE
+def loginPage(request):
+    page = 'login'
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        try:
+            user = Player.objects.get(emailAddress=email)
+        except:
+            return HttpResponse("USER DOES NOT EXIST")
+        if(user.password != password):
+            user = None
+        if user is not None:
+            login(request, user)
+        else:
+            return HttpResponse("USERNAME OR PASSWORD DOES NOT EXIST")
+        context = {'page':page}
+    return render(request, 'login.html')
+def logoutUser(request):
+    logout(request)
+    return redirect(request,'login')
+def registerPage(request):
+    print('hello')
+    if request.method == 'POST':
+        print('hello')
+        try:
+            n_a = Player.objects.create(
+                emailAddress=request.POST.get('email'),
+                password=request.POST.get('password'),
+                firstName=request.POST.get('fname'),
+                middleName=request.POST.get('mname'),
+                lastName=request.POST.get('lname'),
+            )
+            return redirect(request,'login')
+        except Exception as e:
+            print(e)
+            return redirect(request,'register')
+    context = {}
+    return render(request, 'register.html', context)
 def index(request):
-    return HttpResponse("This is a test i guess lol")
+    return render(request, 'blank.html')
 
 # PLEASE
 def please_fucing_helpme(request):

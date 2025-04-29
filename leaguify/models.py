@@ -36,7 +36,8 @@ class Team(models.Model):
     teamName = models.CharField(max_length=32)
     sportID = models.ForeignKey(Sport, on_delete=models.SET_NULL, null=True)
 class Player(models.Model):
-    emailAddress = models.CharField(max_length=64)
+    emailAddress = models.CharField(max_length=64, unique=True)
+    password = models.CharField(max_length=64)
     firstName = models.CharField(max_length=32)
     middleName = models.CharField(max_length=32, null=True)
     lastName = models.CharField(max_length=32)
@@ -59,7 +60,7 @@ class Sport_Stats(models.Model):
     sportID = models.ForeignKey(Sport, on_delete=models.CASCADE)
     eLo = models.FloatField(null=True)
     gamesPlayed = models.IntegerField(default=0)
-    winPercent = models.FloatField(defalut=0)
+    winPercent = models.FloatField(default=0)
 class Social_Media(models.Model):
     playerID = models.ForeignKey(Player, on_delete=models.CASCADE)
     userName = models.CharField(max_length=32)
