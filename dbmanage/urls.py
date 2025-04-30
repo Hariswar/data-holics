@@ -18,5 +18,5 @@ from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("leaguify/", include("leaguify.urls")),
+    path("", include("leaguify.urls")),
 ]
