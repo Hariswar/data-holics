@@ -18,7 +18,7 @@ def loginPage(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
         try:
-            user = Player.objects.get(emailAddress=email)
+            user = User.objects.get(emailAddress=email)
         except:
             return HttpResponse("USER DOES NOT EXIST")
         if(user.password != password):
@@ -31,23 +31,23 @@ def loginPage(request):
     return render(request, 'login.html')
 def logoutUser(request):
     logout(request)
-    return redirect(request,'login')
+    return redirect('login')
 def registerPage(request):
     print('hello')
     if request.method == 'POST':
         print('hello')
         try:
-            n_a = Player.objects.create(
+            n_a = User.objects.create(
                 emailAddress=request.POST.get('email'),
                 password=request.POST.get('password'),
                 firstName=request.POST.get('fname'),
                 middleName=request.POST.get('mname'),
                 lastName=request.POST.get('lname'),
             )
-            return redirect(request,'login')
+            return redirect('login')
         except Exception as e:
             print(e)
-            return redirect(request,'register')
+            return redirect('register')
     context = {}
     return render(request, 'register.html', context)
 def index(request):

@@ -40,6 +40,7 @@ class User(models.Model):
     firstName = models.CharField(max_length=32)
     middleName = models.CharField(max_length=32, null=True)
     lastName = models.CharField(max_length=32)
+    last_login = models.DateTimeField(null=True)
     # teamID = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True)
 class Player(models.Model):
     userID = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
