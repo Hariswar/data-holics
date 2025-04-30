@@ -1,0 +1,25 @@
+{% extends 'master_template.html' %}
+
+{% block title %}
+<title>Leaguify | Games</title>
+{% endblock %}
+
+{% block header %}
+<h1>Log a Game</h1>
+{% endblock %}
+
+{% block body %}
+<form method ="POST" action="">
+    {% csrf_token %}
+    <label>Did You Win? </label>
+    <input type="checkbox" name="win" value="yes"/>
+    <br>
+    <label>If you didn't win, who won?</label>
+    <input type="text" name="teamWin" placeholder="Enter Team Name"/>
+    <br>
+    <label>Description: </label>
+    <input type="text" name="description" placeholder="Describe the game..."/>
+    <br>
+    <input type="submit" value="Log"/>
+</form>
+{% endblock %}

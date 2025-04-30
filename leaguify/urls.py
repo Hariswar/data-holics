@@ -18,4 +18,5 @@ urlpatterns = [
     path("create_new_team", views.create_new_team, name="create_new_team"),
     path("user_home", views.user_home, name="user_home"),
     path("create_sport", views.create_new_sport, name="create_sport"),
+    path("create_game", views.create_game, name="create_game"),
 ]

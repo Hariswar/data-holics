@@ -55,6 +55,7 @@ class Game(models.Model):
     # leagueID = models.ForeignKey(League, on_delete=models.SET_NULL, null=True)
     # sportID = models.ForeignKey(Sport, on_delete=models.CASCADE)
     Description = models.TextField(null=True)
+    
 class Sport_Stats(models.Model):
     teamID = models.ForeignKey(Team, on_delete=models.SET_NULL,null=True)
     score = models.IntegerField(default=0)

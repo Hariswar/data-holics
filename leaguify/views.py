@@ -99,6 +99,7 @@ def create_league(request):
 # CREATE NEW TEAM PAGE
 @csrf_protect
 def create_team(request):
+    
     template = loader.get_template('create_team.html')
     context = {}
     return HttpResponse(template.render(context, request))
@@ -122,7 +123,27 @@ def user_home(request):
     }
     return HttpResponse(template.render(context, request))
 
-
+@login_required
+def create_game(request):
+    if request.method == 'POST':
+        try:
+            didWin = request.POST.get('win')
+            team = None
+            if didWin == 'yes':
+                player = Player.objects.get(userID__emailAddress=request.user)
+                team = player.teamID
+            else:
+                try:
+                    winner = request.POST.get('teamWin')
+                    team = Team.objects.get(teamName=winner)
+                except:
+                    return redirect('create_game')
+            desc = request.POST.get('description')
+            new_game = Game.objects.create(team,desc)
+            return redirect('home')
+        except:
+            return redirect('create_game')
+    return render(request, 'create_game.html')
 # --- DATABASE FUNCTIONS + REDIRECTS ---
 
 # RESPONSE WHEN CREATING NEW ACCOUNT
@@ -151,8 +172,10 @@ def create_new_account(request):
 @csrf_protect
 def create_new_team(request):
     if request.method == 'POST':
+
         return redirect('create_team')
-    return render(request, 'blank.html')
+    
+    return render(request, 'create_team.html')
 
 # CREATE NEW TEAM RESPONSE
 @csrf_protect
