@@ -1,17 +1,24 @@
-{% extends 'blank.html' %}
-{% block content %}
-<div>
-    <form method ="POST" action="">
-        {% csrf_token %}
-        <label>Email: </label>
-        <input type="text" name="email" placeholder="Enter Email"/>
+{% extends 'master_template.html' %}
 
-        <label>Password: </label>
-        <input type="password" name="password" placeholder="Enter Password"/>
+{% block title %}
+<title>Leaguify | Login</title>
+{% endblock %}
 
-        <input type="submit" value="Login"/>
-    </form>
-    <p>Haven't signed up yet?</p>
-    <a href="{% url 'register' %}">Sign up</a>
-</div>
-{% endblock content %}
+{% block header %}
+<h1>Log In</h1>
+{% endblock %}
+
+{% block body %}
+<form method ="POST" action="">
+    {% csrf_token %}
+    <label>Email: </label>
+    <input type="text" name="email" placeholder="Enter Email"/>
+    <br>
+    <label>Password: </label>
+    <input type="password" name="password" placeholder="Enter Password"/>
+    <br>
+    <input type="submit" value="Log In"/>
+</form>
+<p>Haven't signed up yet?</p>
+<a href="{% url 'register' %}">Sign up</a>
+{% endblock %}
