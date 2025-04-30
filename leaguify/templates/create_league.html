@@ -1,11 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaguify | Create League</title>
-</head>
-<body>
-    <p>Create League</p>
-</body>
-</html>
+{% extends 'master_template.html' %}
+
+{% block title %}
+<title>Leaguify | Create League</title>
+{% endblock %}
+
+{% block header %}
+<h1>Create League</h1>
+{% endblock %}
+
+{% block body %}
+<form method="post" class="text_center" action="{% url 'create_new_league' %}">
+    {% csrf_token %}
+    <label for="leagueName">League Name: </label>
+    <input type="text" name="leagueName" placeholder="League Name" required>
+    <br>
+    <label for="sport">Sport: </label>
+    <select name="sport">
+        {% for sport in sports %}
+        <option value="{{ sport.id }}">{{ sport.sportName }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <label for="yourTeamName">Your Team Name: </label>
+    <input type="text" name="yourTeamName" placeholder="Your Team Name" required>
+    <br>
+    <input type="submit" value="Create">
+</form>
+{% endblock %}

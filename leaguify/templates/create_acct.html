@@ -1,20 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaguify | Create Account</title>
-</head>
-<body>
-    <!-- POST REQUEST TO PAGE/FUNCTION THAT INSERTS INFO TO DATABASE -->
-    <form method="post" action="{% url 'create_new_account' %}">
-        {% csrf_token %}
-        <input type="email" placeholder="email@email.com" name="emailAddress" required>
-        <input type="text" placeholder="firstname" name="firstName" required>
-        <input type="text" placeholder="middlename" name="middleName">
-        <input type="text" placeholder="lastname" name="lastName" required>
-        <input type="submit">
-    </form>
-    <a href="create_team">This is a link</a>
-</body>
-</html>
+{% extends 'master_template.html' %}
+
+{% block title %}
+<title>Leaguify | Create Account</title>
+{% endblock %}
+
+{% block header %}
+<h1>Create Account</h1>
+{% endblock %}
+
+{% block body %}
+<form method="post" action="{% url 'create_new_account' %}">
+    {% csrf_token %}
+    <input type="email" placeholder="email@email.com" name="emailAddress" required>
+    <input type="text" placeholder="firstname" name="firstName" required>
+    <input type="text" placeholder="middlename" name="middleName">
+    <input type="text" placeholder="lastname" name="lastName" required>
+    <input type="submit">
+</form>
+{% endblock %}

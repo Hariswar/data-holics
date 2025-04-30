@@ -3,7 +3,10 @@ from django.http import HttpResponse
 from django.template import loader
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_protect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from .models import *
 from .forms import *
 
@@ -17,37 +20,44 @@ def loginPage(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
-        try:
-            user = Player.objects.get(emailAddress=email)
-        except:
-            return HttpResponse("USER DOES NOT EXIST")
-        if(user.password != password):
-            user = None
+        user = authenticate(request, username=email, password=password)
+        print(user)
         if user is not None:
             login(request, user)
+            print(get_user(request))
+            return redirect('user_home')
         else:
             return HttpResponse("USERNAME OR PASSWORD DOES NOT EXIST")
-        context = {'page':page}
+        # try:
+        #     u = authenticate(request, username=email, password=password)
+        #     print(u)
+        #     user = User.objects.get(username=email)
+        # except:
+        #     return HttpResponse("USER DOES NOT EXIST")
+        # if(user.password != password):
+        #     user = None
+        # context = {'page':page}
     return render(request, 'login.html')
 def logoutUser(request):
     logout(request)
-    return redirect(request,'login')
+    return redirect('login')
 def registerPage(request):
-    print('hello')
     if request.method == 'POST':
-        print('hello')
         try:
-            n_a = Player.objects.create(
+            n_a = User.objects.create_user(request.POST.get('email'), request.POST.get('email'), request.POST.get('password'))
+            print("user")
+            n_a = Custom_User.objects.create(
                 emailAddress=request.POST.get('email'),
                 password=request.POST.get('password'),
                 firstName=request.POST.get('fname'),
                 middleName=request.POST.get('mname'),
                 lastName=request.POST.get('lname'),
             )
-            return redirect(request,'login')
+            print("custom")
+            return redirect('login')
         except Exception as e:
             print(e)
-            return redirect(request,'register')
+            return redirect('register')
     context = {}
     return render(request, 'register.html', context)
 def index(request):
@@ -72,12 +82,38 @@ def create_acct(request):
 # CREATE NEW LEAGUE PAGE
 @csrf_protect
 def create_league(request):
-    return render(request, 'create_league.html')
+    sports = Sport.objects.all()
+    template = loader.get_template('create_league.html')
+    context = {
+        'sports': sports
+    }
+    return HttpResponse(template.render(context, request))
 
 # CREATE NEW TEAM PAGE
 @csrf_protect
 def create_team(request):
-    return render(request, 'create_team.html')
+    template = loader.get_template('create_team.html')
+    context = {}
+    return HttpResponse(template.render(context, request))
+
+# USER HOME PAGE
+@login_required
+def user_home(request):
+    user = Custom_User.objects.get(emailAddress=request.user)
+    template = loader.get_template('user_home.html')
+    players = Player.objects.filter(id=request.user.id)
+    teamIDs = players.values('teamID_id')
+    teams = []
+    for item in teamIDs: 
+        team = Team.objects.get(id=item['teamID_id'])
+        teams.append({
+            "team": team,
+            "league": team.leagueID
+        })
+    context = {
+        "teams": teams
+    }
+    return HttpResponse(template.render(context, request))
 
 
 # --- DATABASE FUNCTIONS + REDIRECTS ---
@@ -102,4 +138,27 @@ def create_new_account(request):
         newp.save()
         return redirect('create_acct')
 
+    return render(request, 'blank.html')
+
+# CREATE NEW TEAM RESPONSE
+@csrf_protect
+def create_new_team(request):
+    if request.method == 'POST':
+        return redirect('create_team')
+    return render(request, 'blank.html')
+
+# CREATE NEW TEAM RESPONSE
+@csrf_protect
+def create_new_league(request):
+    if request.method == 'POST':
+        leagueName = request.POST.get('leagueName')
+        sportID = request.POST.get('sport')
+        teamName = request.POST.get('yourTeamName')
+        try:
+            league = League.objects.create(leagueName=leagueName, sportID_id=sportID)
+            team = Team.objects.create(teamName=teamName, leagueID_id=league.id)
+            player = Player.objects.create(teamID_id=team.id, userID_id=request.user.id)
+            return redirect('user_home')
+        except Exception as e:
+            return redirect('create_league')
     return render(request, 'blank.html')

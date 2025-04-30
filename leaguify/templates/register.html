@@ -1,27 +1,33 @@
-{% extends 'blank.html' %}
+{% extends 'master_template.html' %}
 
-{%block content%}
-<div>
-    <form method="POST" action="">
-        {% csrf_token %}
-        <label>Email: </label>
-        <input type="text" name="email" placeholder="Enter Email"/>
-        <br>
-        <label>Password: </label>
-        <input type="text" name="password" placeholder="Enter Password"/>
-        <br>
-        <label>First Name: </label>
-        <input type="text" name="fname" placeholder="Enter First Name"/>
-        <br>
-        <label>Middle Name: </label>
-        <input type="text" name="mname" placeholder="Enter Middle Name"/>
-        <br>
-        <label>Last Name: </label>
-        <input type="text" name="lname" placeholder="Enter Last Name"/>
-        <br>
-        <input type="submit" value="Register"/>
-    </form>
-    <p>Already signed up?</p>
-    <a href="{% url 'login' %}">Login</a>
-</div>
-{%endblock content%}
+{% block title %}
+<title>Leaguify | Register</title>
+{% endblock %}
+
+{% block header %}
+<h1>Register</h1>
+{% endblock %}
+
+{%block body%}
+<form method="POST" action="">
+    {% csrf_token %}
+    <label>Email: </label>
+    <input type="text" name="email" placeholder="Enter Email"/>
+    <br>
+    <label>Password: </label>
+    <input type="text" name="password" placeholder="Enter Password"/>
+    <br>
+    <label>First Name: </label>
+    <input type="text" name="fname" placeholder="Enter First Name"/>
+    <br>
+    <label>Middle Name: </label>
+    <input type="text" name="mname" placeholder="Enter Middle Name"/>
+    <br>
+    <label>Last Name: </label>
+    <input type="text" name="lname" placeholder="Enter Last Name"/>
+    <br>
+    <input type="submit" value="Register"/>
+</form>
+<p>Already signed up?</p>
+<a href="{% url 'login' %}">Login</a>
+{%endblock%}
