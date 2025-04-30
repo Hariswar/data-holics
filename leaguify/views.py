@@ -61,6 +61,13 @@ def registerPage(request):
     context = {}
     return render(request, 'register.html', context)
 def index(request):
+    user = None
+    try:
+        user = Custom_User.objects.get(emailAddress=request.user)
+    except:
+        user = None
+    if user is not None:
+        return redirect('user_home')
     return render(request, 'blank.html')
 
 # PLEASE
@@ -181,6 +188,7 @@ def create_new_sport(request):
             isIndividual = False
         try:
             sport = Sport.objects.create(sportName=sportName, individualSport=isIndividual)
+            return redirect('user_home')
         except:
             return redirect('create_sport')
     return render(request, 'create_sport.html')

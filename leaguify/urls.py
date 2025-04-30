@@ -4,7 +4,7 @@ from . import views
 
 # ADD NEW URLS WHEN NEW PAGES ARE CREATED, INCLUDING REDIRECTS
 urlpatterns = [
-    path("", views.index, name="index"),
+    path("", views.index, name="home"),
     path("please_fucing_helpme", views.please_fucing_helpme, name="please_fucing_helpme"),
     path("create_acct", views.create_acct, name="create_acct"),
     path("create_new_account", views.create_new_account, name="create_new_account"),
