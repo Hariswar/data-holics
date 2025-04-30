@@ -6,11 +6,37 @@
 
 nav {
     background-color: #051;
-    color: #bec;
+    color: #dfe;
     display: flex;
     text-align: left;
     align-items: left;
-    width: 100%;
+    padding: 5pt;
+    margin-bottom: 5pt;
+    border-radius: 3pt;
+    vertical-align: center;
+}
+
+nav small, p, h1, h2, h3, h4, h5, h6 {
+    padding: 0 10pt;
+}
+
+a:link, a:visited {
+    color: #dfe;
+    margin: 0;
+    padding: 0;
+}
+
+nav hr {
+    padding: 0;
+    border: none;
+}
+
+input {
+    border: solid 1pt #1a4;
+    background-color: #bec;
+    color: #051;
+    padding: 5pt;
+    border-radius: 3pt;
 }
 
 body {

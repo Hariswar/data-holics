@@ -1,23 +1,16 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaguify | Create League</title>
-    <link rel="stylesheet" href="{% static 'index.css' %}">
-</head>
-<nav>
-    <h3>Item 1</h3>
-    <h3>Item 2</h3>
-</nav>
-<header>
-    <h1>Create League</h1>
-</header>
-<body class="text_center">
-    <form>
-        <input type="text" name="leagueName" placeholder="League Name">
-        <input type="submit" value="Create">
-    </form>
-</body>
-</html>
+{% extends 'master_template.html' %}
+
+{% block title %}
+<title>Leaguify | Create League</title>
+{% endblock %}
+
+{% block header %}
+<h1>Create League</h1>
+{% endblock %}
+
+{% block body %}
+<form>
+    <input type="text" name="leagueName" placeholder="League Name">
+    <input type="submit" value="Create">
+</form>
+{% endblock %}
