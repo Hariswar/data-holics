@@ -96,6 +96,7 @@ def registerPage(request):
             return redirect('register')
     context = {}
     return render(request, 'register.html', context)
+
 def index(request):
     user = None
     try:
@@ -150,6 +151,14 @@ def create_team(request, pk):
     if request.method == 'GET':
         template = loader.get_template('create_team.html')
         context = {}
+        players = Player.objects.filter(userID_id=request.user.id)
+        for team in players.values('teamID_id'):
+            teams = Team.objects.filter(id=team['teamID_id'], leagueID_id=pk)
+            if teams.count() > 0:
+                context['team_creatable'] = False
+                break
+        else:
+            context['team_creatable'] = True
         return HttpResponse(template.render(context, request))
     elif request.method == 'POST':
         teamName = request.POST.get('teamName')
