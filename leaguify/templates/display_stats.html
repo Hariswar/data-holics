@@ -1,0 +1,71 @@
+{% extends 'master_template.html' %}
+
+{% block title %}
+<title>Leaguify | Display Stats</title>
+{% endblock %}
+
+{% block header %}
+<h1>View Player Statistics</h1>
+{% endblock %}
+
+{% block body %}
+<form method="post" class="text_center" action="{% url 'display_stats' %}">
+    {% csrf_token %}
+    <label for="playerID">Player ID:</label>
+    <input type="text" name="playerID" placeholder="Enter Player ID" required>
+    <br>
+
+    <label for="filter_type">View Stats For:</label>
+    <select name="filter_type" required>
+        <option value="">-- Select Filter Type --</option>
+        <option value="sport">Specific Sport</option>
+        <option value="league">Specific League</option>
+        <option value="highest">Highest Scoring Game</option>
+    </select>
+    <br>
+
+    <label for="sport">Choose Sport (if selected):</label>
+    <select name="sport">
+        <option value="">-- Select Sport --</option>
+        {% for sport in sports %}
+        <option value="{{ sport.id }}">{{ sport.sportName }}</option>
+        {% endfor %}
+    </select>
+    <br>
+
+    <label for="league">Choose League (if selected):</label>
+    <select name="league">
+        <option value="">-- Select League --</option>
+        {% for league in leagues %}
+        <option value="{{ league.id }}">{{ league.leagueName }}</option>
+        {% endfor %}
+    </select>
+    <br>
+
+    <input type="submit" value="Submit">
+</form>
+
+<hr>
+
+{% if error %}
+<p style="color: red;">{{ error }}</p>
+{% endif %}
+
+{% if results %}
+<h2>Results:</h2>
+<ul>
+    {% for stat in results %}
+    <li>
+        <strong>Sport:</strong> {{ stat.sportID.sportName }} |
+        <strong>League:</strong> {{ stat.leagueID.leagueName }} |
+        <strong>Score:</strong> {{ stat.score }} |
+        <strong>Wins:</strong> {{ stat.wins }} |
+        <strong>Losses:</strong> {{ stat.losses }} |
+        <strong>Draws:</strong> {{ stat.draws }} |
+        <strong>Win %:</strong> {{ stat.winPercent|floatformat:2 }}% |
+        <strong>Games Played:</strong> {{ stat.gamesPlayed }}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

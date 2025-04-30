@@ -70,6 +70,53 @@ def index(request):
         return redirect('user_home')
     return render(request, 'blank.html')
 
+
+def display_stats(request):
+    context = {
+        "results": None,
+        "error": None,
+        "sports": Sport.objects.all(),
+        "leagues": League.objects.all(),
+    }
+
+    if request.method == "POST":
+        first_name = request.POST.get('firstName')
+        last_name = request.POST.get('lastName')
+        filter_type = request.POST.get("filter_type")
+        selected_sport = request.POST.get("sport")
+        selected_league = request.POST.get("league")
+
+        try:
+            player = Player.objects.get(firstName__iexact=first_name, lastName__iexact=last_name)
+        except Player.DoesNotExist:
+            return render(request, 'display_stats.html', {
+                'error': "Player not found.",
+                'sports': Sport.objects.all(),
+                'leagues': League.objects.all()
+            })
+
+        # Filter stats by team
+        stats = Sport_Stats.objects.filter(teamID=player.teamID)
+
+        if filter_type == "sport" and selected_sport:
+            stats = stats.filter(sportID=selected_sport)
+        elif filter_type == "league" and selected_league:
+            stats = stats.filter(leagueID=selected_league)
+        elif filter_type == "highest":
+            stats = stats.order_by("-score")[:1]
+
+        return render(request, 'display_stats.html', {
+            'results': stats,
+            'sports': Sport.objects.all(),
+            'leagues': League.objects.all()
+        })
+
+    return render(request, 'display_stats.html', {
+        'sports': Sport.objects.all(),
+        'leagues': League.objects.all()
+    })
+
+
 # PLEASE
 def please_fucing_helpme(request):
     sports = Sport.objects.all().values()
@@ -215,3 +262,5 @@ def create_new_sport(request):
         except:
             return redirect('create_sport')
     return render(request, 'create_sport.html')
+
+
