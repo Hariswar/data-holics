@@ -10,6 +10,7 @@ urlpatterns = [
     path("create_new_account", views.create_new_account, name="create_new_account"),
     path("create_league", views.create_league, name="create_league"),
     path("create_new_league", views.create_new_league, name="create_new_league"),
+    path("create_new_league", views.create_new_league, name="create_new_league"),
     path("create_team", views.create_team, name="create_team"),
     path("login", views.loginPage, name="login"),
     path("register", views.registerPage, name="register"),
