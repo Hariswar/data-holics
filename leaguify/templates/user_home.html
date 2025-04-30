@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaguify | User Home</title>
+    <link rel="stylesheet" href="{% static 'index.css' %}">
+</head>
+<header>
+    <h1>User Home</h1>
+</header>
+<body>
+    <table>
+        <tr>
+            <th>League Name</th>
+            <th>#</th>
+            <th>Test</th>
+        </tr>
+        {% for t in teams %}
+            <tr>
+                <td>{{ t.name }}</td>
+                <td>{{ t.num }}</td>
+                <td>{{ t.test }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

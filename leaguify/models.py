@@ -59,7 +59,7 @@ class Sport_Stats(models.Model):
     sportID = models.ForeignKey(Sport, on_delete=models.CASCADE)
     eLo = models.FloatField(null=True)
     gamesPlayed = models.IntegerField(default=0)
-    winPercent = models.FloatField(defalut=0)
+    winPercent = models.FloatField(default=0)
 class Social_Media(models.Model):
     playerID = models.ForeignKey(Player, on_delete=models.CASCADE)
     userName = models.CharField(max_length=32)

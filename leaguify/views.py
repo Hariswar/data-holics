@@ -33,12 +33,33 @@ def create_acct(request):
 # CREATE NEW LEAGUE PAGE
 @csrf_protect
 def create_league(request):
-    return render(request, 'create_league.html')
+    template = loader.get_template('create_league.html')
+    context = {}
+    return HttpResponse(template.render(context, request))
 
 # CREATE NEW TEAM PAGE
 @csrf_protect
 def create_team(request):
-    return render(request, 'create_team.html')
+    template = loader.get_template('create_team.html')
+    context = {}
+    return HttpResponse(template.render(context, request))
+
+# USER HOME PAGE
+def user_home(request, user_id=0):
+    template = loader.get_template('user_home.html')
+    players = Player.objects.filter(id=user_id)
+    teams = players.values('teamID')
+    context = {
+        "teams": [
+            { "name": "yay", "num": 5, "test": "????" },
+            { "name": "yay1", "num": 5, "test": "????" },
+            { "name": "yay2", "num": 5, "test": "????" },
+            { "name": "yay3", "num": 5, "test": "????" },
+            { "name": "yay4", "num": 5, "test": "????" },
+            { "name": "yay7", "num": 5, "test": "????" }
+        ]
+    }
+    return HttpResponse(template.render(context, request))
 
 
 # --- DATABASE FUNCTIONS + REDIRECTS ---
@@ -63,4 +84,18 @@ def create_new_account(request):
         newp.save()
         return redirect('create_acct')
 
+    return render(request, 'blank.html')
+
+# CREATE NEW TEAM RESPONSE
+@csrf_protect
+def create_new_team(request):
+    if request.method == 'POST':
+        return redirect('create_team')
+    return render(request, 'blank.html')
+
+# CREATE NEW TEAM RESPONSE
+@csrf_protect
+def create_new_league(request):
+    if request.method == 'POST':
+        return redirect('create_league')
     return render(request, 'blank.html')
