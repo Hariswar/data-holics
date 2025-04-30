@@ -1,12 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
+:root {
+    --ultralight: #dfe;
+    --light: #bec;
+    --midtone: #1a4;
+    --dark: #051;
+
+    /* --ultralight: #cbf;
+    --light: #a9e;
+    --midtone: #62b;
+    --dark: #205; */
+}
+
 * {
     font-family: 'Inter', sans-serif;
 }
 
 nav {
-    background-color: #051;
-    color: #dfe;
+    background-color: var(--dark);
+    color: var(--ultralight);
     display: flex;
     text-align: left;
     align-items: left;
@@ -21,7 +33,13 @@ nav small, p, h1, h2, h3, h4, h5, h6 {
 }
 
 a:link, a:visited {
-    color: #dfe;
+    color: var(--dark);
+    margin: 0;
+    padding: 0;
+}
+
+nav a:link, nav a:visited {
+    color: var(--ultralight);
     margin: 0;
     padding: 0;
 }
@@ -32,19 +50,19 @@ nav hr {
 }
 
 input {
-    border: solid 1pt #1a4;
-    background-color: #bec;
-    color: #051;
+    border: solid 1pt var(--midtone);
+    background-color: var(--light);
+    color: var(--dark);
     padding: 5pt;
     border-radius: 3pt;
 }
 
 body {
-    background-color: #dfe;
+    background-color: var(--ultralight);
 }
 
 header {
-    background-color: #1a4;
+    background-color: var(--midtone);
     padding: 5pt;
     text-align: center;
     margin-bottom: 5pt;
@@ -56,8 +74,8 @@ header {
 }
 
 table {
-    border: 3pt solid #bec;
-    background-color: #dfe;
+    border: 3pt solid var(--light);
+    background-color: var(--ultralight);
     border-radius: 3pt;
     width: 100%;
 }
@@ -67,7 +85,7 @@ th, td {
 }
 
 tr:nth-child(even) {
-    background-color: #bec;
+    background-color: var(--light);
 }
 
 form * {
