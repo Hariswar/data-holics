@@ -91,3 +91,11 @@ tr:nth-child(even) {
 form * {
     margin: 3pt 0;
 }
+
+button {
+    background-color: var(--light);
+    margin: 5pt 0;
+    border: 1pt solid var(--midtone);
+    padding: 5pt;
+    border-radius: 3pt;
+}

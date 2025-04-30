@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block body %}
-<form method="post" class="text_center" action="{% url 'create_new_league' %}">
+<form method="post" class="text_center" action="">
     {% csrf_token %}
     <label for="leagueName">League Name: </label>
     <input type="text" name="leagueName" placeholder="League Name" required>

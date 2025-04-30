@@ -11,20 +11,21 @@
 
 {% block body %}
 {% if teams %}
-<table>
-    <tr>
-        <th>Team Name</th>
-        <th>League Name</th>
-        <th>Sport</th>
-    </tr>
-    {% for t in teams %}
-    <tr>
-        <td>{{ t.team.teamName }}</td>
-        <td>{{ t.league.leagueName }}</td>
-        <td>{{ t.league.sportID.sportName }}</td>
-    </tr>
-    {% endfor %}
-</table>
+    <h3>Teams</h3>
+    <table>
+        <tr>
+            <th>Team</th>
+            <th>League</th>
+            <th>Sport</th>
+        </tr>
+        {% for t in teams %}
+        <tr>
+            <td><a href="team/{{ t.team.id }}">{{ t.team.teamName }}</a></td>
+            <td><a href="league/{{ t.league.id }}">{{ t.league.leagueName }}</a></td>
+            <td>{{ t.league.sportID.sportName }}</td>
+        </tr>
+        {% endfor %}
+    </table>
 {% else %}
 <p class="text_center">Your leagues will appear here. Join or create one to get started!</p>
 {% endif %}
