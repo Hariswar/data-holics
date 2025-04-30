@@ -34,21 +34,24 @@ class Sport(models.Model):
     individualSport = models.BooleanField()
 class Team(models.Model):
     teamName = models.CharField(max_length=32)
-    sportID = models.ForeignKey(Sport, on_delete=models.SET_NULL, null=True)
-class Player(models.Model):
+class User(models.Model):
     emailAddress = models.CharField(max_length=64, unique=True)
     password = models.CharField(max_length=64)
     firstName = models.CharField(max_length=32)
     middleName = models.CharField(max_length=32, null=True)
     lastName = models.CharField(max_length=32)
+    # teamID = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True)
+class Player(models.Model):
+    userID = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     teamID = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True)
 class League(models.Model):
     dateCreated = models.DateField
     leagueName = models.CharField(max_length=32)
+    sportID = models.ForeignKey(Sport, on_delete=models.SET_NULL, null=True)
 class Game(models.Model):
-    winnerID = models.ForeignKey(Player, on_delete=models.CASCADE)
-    leagueID = models.ForeignKey(League, on_delete=models.SET_NULL, null=True)
-    sportID = models.ForeignKey(Sport, on_delete=models.CASCADE)
+    winnerID = models.ForeignKey(Team, on_delete=models.CASCADE)
+    # leagueID = models.ForeignKey(League, on_delete=models.SET_NULL, null=True)
+    # sportID = models.ForeignKey(Sport, on_delete=models.CASCADE)
     Description = models.TextField(null=True)
 class Sport_Stats(models.Model):
     teamID = models.ForeignKey(Team, on_delete=models.SET_NULL,null=True)
@@ -70,7 +73,7 @@ class Team_Social_Media(models.Model):
     userName = models.CharField(max_length=32)
     type = models.CharField(max_length=32)
 class Plays(models.Model):
-    leagueID = models.ForeignKey(League, on_delete=models.SET_NULL, null=True)
+    # leagueID = models.ForeignKey(League, on_delete=models.SET_NULL, null=True)
     teamID = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True)
     gameID = models.ForeignKey(Game, on_delete=models.SET_NULL, null=True)
 
