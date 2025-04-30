@@ -1,0 +1,33 @@
+{% extends 'master_template.html' %}
+
+{% block title %}
+<title>Leaguify | User Home</title>
+{% endblock %}
+
+{% block header %}
+<h1>User Home</h1>
+{% endblock %}
+
+
+{% block body %}
+{% if teams %}
+<table>
+    <tr>
+        <th>Team Name</th>
+        <th>#</th>
+        <th>Test</th>
+    </tr>
+    {% for t in teams %}
+    <tr>
+        <td>{{ t.teamName }}</td>
+        <td>{{ t.teamName }}</td>
+        <td>{{ t.test }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>Your leagues will appear here. Join or create one to get started!</p>
+{% endif %}
+{% endblock %}
+
+

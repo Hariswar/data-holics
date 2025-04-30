@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block title %}
+    {% endblock %}
+    <link rel="stylesheet" href="{% static 'index.css' %}">
+</head>
+<nav>
+    <small><b>Leaguify</b></small>
+    <small><a href="{% url 'create_league' %}">Create League</a></small>
+    <small><a href="{% url 'create_team' %}">Create Team</a></small>
+    <hr>
+    <small><a href="{% url 'register' %}">Register</a></small>
+    <small><a href="{% url 'login' %}">Log In</a></small>
+</nav>
+<header>
+    {% block header %}
+    {% endblock %}
+</header>
+<body>
+    {% block body %}
+    {% endblock %}
+</body>
+</html>

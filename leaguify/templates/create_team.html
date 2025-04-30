@@ -1,11 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaguify | Create Team</title>
-</head>
-<body>
-    <p>Create Team</p>
-</body>
-</html>
+{% extends 'master_template.html' %}
+
+{% block title %}
+<title>Leaguify | Create Team</title>
+{% endblock %}
+
+{% block header %}
+<h1>Create Team</h1>
+{% endblock %}
+
+{% block body %}
+<form method='post' action="{% url 'create_new_team' %}">
+    {% csrf_token %}
+    <input type="text" name="teamName" placeholder="Team Name" maxlength="32" required>
+    <input type="submit" value="Create">
+</form>
+{% endblock %}
