@@ -69,3 +69,7 @@ th, td {
 tr:nth-child(even) {
     background-color: #bec;
 }
+
+form * {
+    margin: 3pt 0;
+}

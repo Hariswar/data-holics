@@ -14,19 +14,19 @@
 <table>
     <tr>
         <th>Team Name</th>
-        <th>#</th>
-        <th>Test</th>
+        <th>League Name</th>
+        <th>Sport</th>
     </tr>
     {% for t in teams %}
     <tr>
-        <td>{{ t.teamName }}</td>
-        <td>{{ t.teamName }}</td>
-        <td>{{ t.test }}</td>
+        <td>{{ t.team.teamName }}</td>
+        <td>{{ t.league.leagueName }}</td>
+        <td>{{ t.league.sportID.sportName }}</td>
     </tr>
     {% endfor %}
 </table>
 {% else %}
-<p>Your leagues will appear here. Join or create one to get started!</p>
+<p class="text_center">Your leagues will appear here. Join or create one to get started!</p>
 {% endif %}
 {% endblock %}
 

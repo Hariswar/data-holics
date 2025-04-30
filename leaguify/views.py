@@ -3,7 +3,10 @@ from django.http import HttpResponse
 from django.template import loader
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_protect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from .models import *
 from .forms import *
 
@@ -17,33 +20,40 @@ def loginPage(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
-        try:
-            user = User.objects.get(emailAddress=email)
-        except:
-            return HttpResponse("USER DOES NOT EXIST")
-        if(user.password != password):
-            user = None
+        user = authenticate(request, username=email, password=password)
+        print(user)
         if user is not None:
             login(request, user)
+            print(get_user(request))
+            return redirect('user_home')
         else:
             return HttpResponse("USERNAME OR PASSWORD DOES NOT EXIST")
-        context = {'page':page}
+        # try:
+        #     u = authenticate(request, username=email, password=password)
+        #     print(u)
+        #     user = User.objects.get(username=email)
+        # except:
+        #     return HttpResponse("USER DOES NOT EXIST")
+        # if(user.password != password):
+        #     user = None
+        # context = {'page':page}
     return render(request, 'login.html')
 def logoutUser(request):
     logout(request)
     return redirect('login')
 def registerPage(request):
-    print('hello')
     if request.method == 'POST':
-        print('hello')
         try:
-            n_a = User.objects.create(
+            n_a = User.objects.create_user(request.POST.get('email'), request.POST.get('email'), request.POST.get('password'))
+            print("user")
+            n_a = Custom_User.objects.create(
                 emailAddress=request.POST.get('email'),
                 password=request.POST.get('password'),
                 firstName=request.POST.get('fname'),
                 middleName=request.POST.get('mname'),
                 lastName=request.POST.get('lname'),
             )
+            print("custom")
             return redirect('login')
         except Exception as e:
             print(e)
@@ -72,8 +82,11 @@ def create_acct(request):
 # CREATE NEW LEAGUE PAGE
 @csrf_protect
 def create_league(request):
+    sports = Sport.objects.all()
     template = loader.get_template('create_league.html')
-    context = {}
+    context = {
+        'sports': sports
+    }
     return HttpResponse(template.render(context, request))
 
 # CREATE NEW TEAM PAGE
@@ -84,13 +97,19 @@ def create_team(request):
     return HttpResponse(template.render(context, request))
 
 # USER HOME PAGE
-def user_home(request, user_id=0):
+@login_required
+def user_home(request):
+    user = Custom_User.objects.get(emailAddress=request.user)
     template = loader.get_template('user_home.html')
-    players = Player.objects.filter(id=user_id)
-    teamIDs = players.values_list('id', 'teamID_id')
+    players = Player.objects.filter(id=request.user.id)
+    teamIDs = players.values('teamID_id')
     teams = []
-    for id in teamIDs: 
-        teams.append(Team.objects.get(pk=id))
+    for item in teamIDs: 
+        team = Team.objects.get(id=item['teamID_id'])
+        teams.append({
+            "team": team,
+            "league": team.leagueID
+        })
     context = {
         "teams": teams
     }
@@ -132,5 +151,14 @@ def create_new_team(request):
 @csrf_protect
 def create_new_league(request):
     if request.method == 'POST':
-        return redirect('create_league')
+        leagueName = request.POST.get('leagueName')
+        sportID = request.POST.get('sport')
+        teamName = request.POST.get('yourTeamName')
+        try:
+            league = League.objects.create(leagueName=leagueName, sportID_id=sportID)
+            team = Team.objects.create(teamName=teamName, leagueID_id=league.id)
+            player = Player.objects.create(teamID_id=team.id, userID_id=request.user.id)
+            return redirect('user_home')
+        except Exception as e:
+            return redirect('create_league')
     return render(request, 'blank.html')

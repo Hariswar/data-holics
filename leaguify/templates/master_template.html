@@ -9,12 +9,18 @@
     <link rel="stylesheet" href="{% static 'index.css' %}">
 </head>
 <nav>
-    <small><b>Leaguify</b></small>
+    <small><i><b>Leaguify</b></i></small>
+    {% if user.is_authenticated %}
     <small><a href="{% url 'create_league' %}">Create League</a></small>
-    <small><a href="{% url 'create_team' %}">Create Team</a></small>
+    <!-- <small><a href="{% url 'create_team' %}">Create Team</a></small> -->
+    <hr>
+    <small><a href="{% url 'user_home' %}">{{ user }}</a></small>
+    <small><a href="{% url 'log_out' %}">Log Out</a></small>
+    {% else %}
     <hr>
     <small><a href="{% url 'register' %}">Register</a></small>
     <small><a href="{% url 'login' %}">Log In</a></small>
+    {% endif %}
 </nav>
 <header>
     {% block header %}

@@ -32,9 +32,7 @@ from django.db import models
 class Sport(models.Model):
     sportName = models.CharField(max_length=32)
     individualSport = models.BooleanField()
-class Team(models.Model):
-    teamName = models.CharField(max_length=32)
-class User(models.Model):
+class Custom_User(models.Model):
     emailAddress = models.CharField(max_length=64, unique=True)
     password = models.CharField(max_length=64)
     firstName = models.CharField(max_length=32)
@@ -42,13 +40,16 @@ class User(models.Model):
     lastName = models.CharField(max_length=32)
     last_login = models.DateTimeField(null=True)
     # teamID = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True)
-class Player(models.Model):
-    userID = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    teamID = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True)
 class League(models.Model):
     dateCreated = models.DateField
     leagueName = models.CharField(max_length=32)
     sportID = models.ForeignKey(Sport, on_delete=models.SET_NULL, null=True)
+class Team(models.Model):
+    teamName = models.CharField(max_length=32)
+    leagueID = models.ForeignKey(League, on_delete=models.CASCADE, null=False)
+class Player(models.Model):
+    userID = models.ForeignKey(Custom_User, on_delete=models.SET_NULL, null=True)
+    teamID = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True)
 class Game(models.Model):
     winnerID = models.ForeignKey(Team, on_delete=models.CASCADE)
     # leagueID = models.ForeignKey(League, on_delete=models.SET_NULL, null=True)
