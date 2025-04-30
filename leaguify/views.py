@@ -162,3 +162,25 @@ def create_new_league(request):
         except Exception as e:
             return redirect('create_league')
     return render(request, 'blank.html')
+
+@login_required
+def create_new_sport(request):
+    if request.method == 'POST':
+        sportName = request.POST.get('sport')
+        i = None
+        try:
+            i=Sport.objects.get(sportName=sportName)
+        except:
+            i=None
+        if i is not None:
+            return redirect('create_sport')
+        isIndividual = request.POST.get('individual')
+        if isIndividual == "yes":
+            isIndividual = True
+        else:
+            isIndividual = False
+        try:
+            sport = Sport.objects.create(sportName=sportName, individualSport=isIndividual)
+        except:
+            return redirect('create_sport')
+    return render(request, 'create_sport.html')

@@ -1,0 +1,24 @@
+{% extends 'master_template.html' %}
+
+{% block title %}
+<title>Leaguify | Sports</title>
+{% endblock %}
+
+{% block header %}
+<h1>Create New Sport</h1>
+{% endblock %}
+
+{% block body %}
+<form method ="POST" action="">
+    {% csrf_token %}
+    <label>Sport Name: </label>
+    <input type="text" name="sport" placeholder="Enter Name"/>
+    <br>
+    <label>Individual? </label>
+    <input type="checkbox" name="individual" value="yes"/>
+    <br>
+    <input type="submit" value="Log In"/>
+</form>
+<p>Haven't signed up yet?</p>
+<a href="{% url 'register' %}">Sign up</a>
+{% endblock %}
