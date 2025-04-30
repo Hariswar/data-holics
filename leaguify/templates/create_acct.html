@@ -1,11 +1,20 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leaguify | Create Account</title>
+    <link rel="stylesheet" href="{% static 'index.css' %}">
 </head>
-<body>
+<nav>
+    <h3>Item 1</h3>
+    <h3>Item 2</h3>
+</nav>
+<header>
+    <h1>Create Account</h1>
+</header>
+<body class="text_center">
     <!-- POST REQUEST TO PAGE/FUNCTION THAT INSERTS INFO TO DATABASE -->
     <form method="post" action="{% url 'create_new_account' %}">
         {% csrf_token %}

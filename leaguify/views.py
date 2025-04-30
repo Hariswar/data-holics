@@ -48,16 +48,12 @@ def create_team(request):
 def user_home(request, user_id=0):
     template = loader.get_template('user_home.html')
     players = Player.objects.filter(id=user_id)
-    teams = players.values('teamID')
+    teamIDs = players.values_list('id', 'teamID_id')
+    teams = []
+    for id in teamIDs: 
+        teams.append(Team.objects.get(pk=id))
     context = {
-        "teams": [
-            { "name": "yay", "num": 5, "test": "????" },
-            { "name": "yay1", "num": 5, "test": "????" },
-            { "name": "yay2", "num": 5, "test": "????" },
-            { "name": "yay3", "num": 5, "test": "????" },
-            { "name": "yay4", "num": 5, "test": "????" },
-            { "name": "yay7", "num": 5, "test": "????" }
-        ]
+        "teams": teams
     }
     return HttpResponse(template.render(context, request))
 
