@@ -21,7 +21,9 @@
         </tr>
     {% endfor %}
     </table>
+    {% if team_creatable %}
     <a href="create_team">
         <button>Create Team</button>
     </a>
+    {% endif %}
 {% endblock %}
