@@ -22,4 +22,5 @@ urlpatterns = [
     path("team/<pk>/add_social_media", views.add_team_social_media, name="add_team_social_media"),
     path("add_player_social_media", views.add_player_social_media, name="add_player_social_media"),
     path("team/<pk>/join", views.join_team, name="join_team"),
+    path("all_leagues", views.all_leagues, name="all_leagues"),
 ]

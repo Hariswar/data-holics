@@ -39,6 +39,12 @@ class LeagueDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         teams = Team.objects.filter(leagueID_id=context['object'].id)
+        for team in teams:
+            players = Player.objects.filter(teamID_id=team.id, userID_id=self.request.user.id)
+            if players.count() > 0:
+                context['team_creatable'] = False
+        else:
+            context['team_creatable'] = True
         context['teams'] = teams
         return context
 
@@ -138,6 +144,13 @@ def index(request):
         return redirect('user_home')
     return redirect('login')
 
+def all_leagues(request):
+    template = loader.get_template('public_leagues.html')
+    context = {
+        'leagues': League.objects.all()
+    }
+    return HttpResponse(template.render(context, request))
+
 # CREATE NEW ACCOUNT PAGE
 @csrf_protect
 def create_acct(request):
@@ -177,7 +190,7 @@ def create_team(request, pk):
     if request.method == 'GET':
         template = loader.get_template('create_team.html')
         context = {}
-        players = Player.objects.filter(userID_id=request.user.id)
+        players = Player.objects.filter(userID=request.user.id)
         for team in players.values('teamID_id'):
             teams = Team.objects.filter(id=team['teamID_id'], leagueID_id=pk)
             if teams.count() > 0:
@@ -190,7 +203,10 @@ def create_team(request, pk):
         empty = json.dumps({}).encode('utf-8')
         teamName = request.POST.get('teamName')
         team = Team.objects.create(teamName=teamName, leagueID_id=pk)
-        player = Player.objects.create(teamID_id=team.id, userID_id=request.user.id)
+        print(team, request.user.id)
+        user = Custom_User.objects.get(emailAddress=request.user.username)
+        player = Player.objects.create(teamID=team, userID_id=user.id)
+        print(player)
         team_stats = Team_Sport_Stats.objects.create(teamID_id=team.id, additionalStats=empty)
         player_stats = Player_Sport_Stats.objects.create(playerID_id=player.id, additionalStats=empty)
         return redirect('.')

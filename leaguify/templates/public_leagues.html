@@ -1,0 +1,22 @@
+{% extends 'master_template.html' %}
+
+{% block title %}
+<title>Leaguify | Leagues</title>
+{% endblock %}
+
+{% block header %}
+<h1>All Leagues</h1>
+{% endblock %}
+
+{% block body %}
+<table>
+    <tr>
+        <th>League Name</th>
+    </tr>
+{% for league in leagues %}
+<tr>
+    <td><a href="league/{{ league.id }}">{{ league.leagueName }}</a></td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

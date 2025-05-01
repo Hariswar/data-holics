@@ -12,6 +12,7 @@
     <small><i><b><a href="{% url 'home' %}">Leaguify</a></b></i></small>
     {% if user.is_authenticated %}
     <small><a href="{% url 'user_home' %}">My Teams & Leagues</a></small>
+    <small><a href="{% url 'all_leagues' %}">All Leagues</a></small>
     <small><a href="{% url 'create_league' %}">Create League</a></small>
     <small><a href="{% url 'create_sport' %}">Create Sport</a></small>
     <small><a href="{% url 'create_game' %}">Log A Game</a></small>
