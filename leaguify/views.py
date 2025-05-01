@@ -136,17 +136,7 @@ def index(request):
         user = None
     if user is not None:
         return redirect('user_home')
-    return render(request, 'blank.html')
-
-
-# PLEASE
-def please_fucing_helpme(request):
-    sports = Sport.objects.all().values()
-    template = loader.get_template('test.html')
-    context = {
-        'sports': sports
-    }
-    return HttpResponse(template.render(context, request))
+    return redirect('login')
 
 # CREATE NEW ACCOUNT PAGE
 @csrf_protect
@@ -213,7 +203,12 @@ def user_home(request):
     template = loader.get_template('user_home.html')
     players = Player.objects.filter(userID_id=request.user.id)
     social_media = []
+    stats = []
+    additionalStats = []
     for player in players.iterator():
+        player_stats = Player_Sport_Stats.objects.get(playerID_id=player.id)
+        stats.append(player_stats)
+        additionalStats.append(json.loads(player_stats.additionalStats))
         items = Social_Media.objects.filter(playerID_id=player.id)
         social_media.extend(items)
     teamIDs = players.values('teamID_id')
@@ -238,6 +233,8 @@ def user_home(request):
     context = {
         "teams": teams,
         "social_media": social_media,
+        "stats": stats,
+        "additional_stats": additionalStats,
     }
     # "general_stats": general_stats,
     # "highest_game": highest_game,

@@ -49,6 +49,12 @@
 
 <hr>
 
+{% if stats %}
+    {% for stat in stats %}
+        <p>{{ stat }}</p>
+    {% endfor %}
+{% endif %}
+
 <!-- Player Stats -->
 <h2 class="text_center">Your Stats</h2>
 <!-- Auto-loaded General Stats -->

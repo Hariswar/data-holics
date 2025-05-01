@@ -6,4 +6,5 @@ admin.site.register(Sport)
 admin.site.register(Team)
 admin.site.register(Social_Media)
 admin.site.register(League)
+admin.site.register(Game)
 # Register your models here.
