@@ -13,11 +13,8 @@
     {% if user.is_authenticated %}
     <small><a href="{% url 'create_league' %}">Create League</a></small>
     <small><a href="{% url 'create_sport' %}">Create Sport</a></small>
-<<<<<<< Updated upstream
     <small><a href="{% url 'create_game' %}">Log A Game</a></small>
-=======
     <small><a href="{% url 'display_stats' %}">Display Stats</a></small>
->>>>>>> Stashed changes
     <!-- <small><a href="{% url 'create_team' %}">Create Team</a></small> -->
     <hr>
     <small><a href="{% url 'user_home' %}">{{ user }}</a></small>
