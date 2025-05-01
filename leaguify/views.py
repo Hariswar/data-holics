@@ -7,10 +7,45 @@ from django.contrib.auth import authenticate, login, logout, get_user
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.generic.detail import DetailView
+from django.views.generic.detail import DetailView
 from .models import *
 from .forms import *
 
 # Create your views here.
+
+# DETAIL VIEWS
+
+class LeagueDetailView(DetailView):
+    model = League
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        teams = Team.objects.filter(leagueID_id=context['object'].id)
+        context['teams'] = teams
+        return context
+class TeamDetailView(DetailView):
+    model = Team
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        players = Player.objects.filter(teamID_id=context['object'].id)
+        context['players'] = players
+        if players.filter(id=self.request.user.id).count() > 0:
+            context['team_joinable'] = False
+        else:
+            players2 = Player.objects.filter(userID_id=self.request.user.id, teamID_id=context['object'].id)
+            if players2.count() > 0:
+                context['team_joinable'] = False
+            else:
+                context['team_joinable'] = True
+        return context
+
+class PlayerDetailView(DetailView):
+    model = Player
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 # DETAIL VIEWS
 
