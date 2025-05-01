@@ -250,9 +250,24 @@ def user_home(request):
             "team": team,
             "league": team.leagueID
         })
+
+    highest_game = Sport_Stats.objects.order_by('-score').first()
+    sports = Sport.objects.all()
+    leagues = League.objects.all()
+    selected_sport = request.POST.get('sport')
+
+    if selected_sport:
+        general_stats = Sport_Stats.objects.filter(teamID__in=[team['team'].id for team in teams], sportID=selected_sport)
+    else:
+        general_stats = Sport_Stats.objects.filter(teamID__in=[team['team'].id for team in teams])
+
     context = {
         "teams": teams,
-        "social_media": social_media
+        "social_media": social_media,
+        "general_stats": general_stats,
+        "highest_game": highest_game,
+        "sports": sports,
+        "leagues": leagues,
     }
     return HttpResponse(template.render(context, request))
 
