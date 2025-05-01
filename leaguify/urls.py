@@ -21,7 +21,6 @@ urlpatterns = [
     path("user_home", views.user_home, name="user_home"),
     path("create_sport", views.create_new_sport, name="create_sport"),
     path("create_game", views.create_game, name="create_game"),
-    path("display_stats", views.display_stats, name="display_stats"),
     path("team/<pk>/", views.TeamDetailView.as_view(), name="team_detail_view"),
     path("player/<pk>/", views.PlayerDetailView.as_view(), name="player_detail_view"),
     path("team/<pk>/add_social_media", views.add_team_social_media, name="add_team_social_media"),
