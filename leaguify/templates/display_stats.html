@@ -9,10 +9,14 @@
 {% endblock %}
 
 {% block body %}
-<form method="post" class="text_center" action="{% url 'display_stats' %}">
+<form method="post" class="text_center" action="">
     {% csrf_token %}
-    <label for="playerID">Player ID:</label>
-    <input type="text" name="playerID" placeholder="Enter Player ID" required>
+    <label for="firstName">First Name:</label>
+    <input type="text" name="firstName" placeholder="Enter First Name" required>
+    <br>
+
+    <label for="lastName">Last Name:</label>
+    <input type="text" name="lastName" placeholder="Enter Last Name" required>
     <br>
 
     <label for="filter_type">View Stats For:</label>
