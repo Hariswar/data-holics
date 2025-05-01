@@ -9,6 +9,28 @@
 {% endblock %}
 
 {% block body %}
+    {% if stats %}
+    <h3>Statistics</h3>
+    <table>
+        <tr>
+            <th>Header</th>
+            {% for key in additional_stats.keys %}
+                <th>{{ key }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Not Header</td>
+            {% for value in additional_stats.values %}
+                <td>{{ value }}</td>
+            {% endfor %}
+            <td>{{ stats.wins }}</td>
+            <td>{{ stats.losses }}</td>
+        </tr>
+    </table>
+    {% else %}
+    <h3>No stats</h3>
+    {% endif %}
+
     <h3>Social Media</h3>
     {% if social_media %}
     <table>
@@ -23,5 +45,7 @@
         </tr>
         {% endfor %}
     </table>
+    {% else %}
+    <p>No Social Media for this Player.</p>
     {% endif %}
 {% endblock %}

@@ -11,47 +11,23 @@ from django.views.generic.detail import DetailView
 from .models import *
 from .forms import *
 
+import json
+
 # Create your views here.
 
 # DETAIL VIEWS
-
-class LeagueDetailView(DetailView):
-    model = League
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        teams = Team.objects.filter(leagueID_id=context['object'].id)
-        context['teams'] = teams
-        return context
-    
-class TeamDetailView(DetailView):
-    model = Team
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        players = Player.objects.filter(teamID_id=context['object'].id)
-        context['players'] = players
-        social_media = Team_Social_Media.objects.filter(teamID_id=context['object'].id)
-        context['social_media'] = social_media
-        if players.filter(id=self.request.user.id).count() > 0:
-            context['team_joinable'] = False
-            context['team_editable'] = True
-        else:
-            context['team_editable'] = False
-            players2 = Player.objects.filter(userID_id=self.request.user.id, teamID_id=context['object'].id)
-            if players2.count() > 0:
-                context['team_joinable'] = False
-            else:
-                context['team_joinable'] = True
-        return context
 
 class PlayerDetailView(DetailView):
     model = Player
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        sm = Social_Media.objects.all()
+        sm = Social_Media.objects.filter(playerID_id=context['object'].id)
         context['social_media'] = sm
+        stats = Player_Sport_Stats.objects.get(playerID_id=context['object'].id)
+        context['stats'] = stats
+        additional_stats = json.loads(stats.additionalStats)
+        context['additional_stats'] = additional_stats
         print(context)
         return context
 
@@ -75,6 +51,10 @@ class TeamDetailView(DetailView):
         social_media = Team_Social_Media.objects.filter(teamID_id=context['object'].id)
         context['players'] = players
         context['social_media'] = social_media
+        stats = Team_Sport_Stats.objects.get(teamID_id=context['object'].id)
+        context['stats'] = stats
+        additional_stats = json.loads(stats.additionalStats)
+        context['additional_stats'] = additional_stats
         if players.filter(id=self.request.user.id).count() > 0:
             context['team_joinable'] = False
             context['team_editable'] = True
@@ -184,30 +164,16 @@ def create_league(request):
         leagueName = request.POST.get('leagueName')
         sportID = request.POST.get('sport')
         teamName = request.POST.get('yourTeamName')
+        empty = json.dumps({}).encode('utf-8')
         try:
             league = League.objects.create(leagueName=leagueName, sportID_id=sportID)
             team = Team.objects.create(teamName=teamName, leagueID_id=league.id)
             player = Player.objects.create(teamID_id=team.id, userID_id=request.user.id)
+            team_stats = Team_Sport_Stats.objects.create(teamID_id=team.id, additionalStats=empty)
+            player_stats = Player_Sport_Stats.objects.create(playerID_id=player.id, additionalStats=empty)
             return redirect('user_home')
         except Exception as e:
-            return redirect('create_league')
-    if request.method == 'GET':
-        sports = Sport.objects.all()
-        template = loader.get_template('create_league.html')
-        context = {
-            'sports': sports
-        }
-        return HttpResponse(template.render(context, request))
-    elif request.method == 'POST':
-        leagueName = request.POST.get('leagueName')
-        sportID = request.POST.get('sport')
-        teamName = request.POST.get('yourTeamName')
-        try:
-            league = League.objects.create(leagueName=leagueName, sportID_id=sportID)
-            team = Team.objects.create(teamName=teamName, leagueID_id=league.id)
-            player = Player.objects.create(teamID_id=team.id, userID_id=request.user.id)
-            return redirect('user_home')
-        except Exception as e:
+            print(e)
             return redirect('create_league')
 
 # CREATE NEW TEAM PAGE
@@ -226,9 +192,12 @@ def create_team(request, pk):
             context['team_creatable'] = True
         return HttpResponse(template.render(context, request))
     elif request.method == 'POST':
+        empty = json.dumps({}).encode('utf-8')
         teamName = request.POST.get('teamName')
         team = Team.objects.create(teamName=teamName, leagueID_id=pk)
         player = Player.objects.create(teamID_id=team.id, userID_id=request.user.id)
+        team_stats = Team_Sport_Stats.objects.create(teamID_id=team.id, additionalStats=empty)
+        player_stats = Player_Sport_Stats.objects.create(playerID_id=player.id, additionalStats=empty)
         return redirect('.')
     return redirect('.')
 
@@ -251,24 +220,24 @@ def user_home(request):
             "league": team.leagueID
         })
 
-    highest_game = Sport_Stats.objects.order_by('-score').first()
-    sports = Sport.objects.all()
-    leagues = League.objects.all()
-    selected_sport = request.POST.get('sport')
+    # highest_game = Sport_Stats.objects.order_by('-score').first()
+    # sports = Sport.objects.all()
+    # leagues = League.objects.all()
+    # selected_sport = request.POST.get('sport')
 
-    if selected_sport:
-        general_stats = Sport_Stats.objects.filter(teamID__in=[team['team'].id for team in teams], sportID=selected_sport)
-    else:
-        general_stats = Sport_Stats.objects.filter(teamID__in=[team['team'].id for team in teams])
+    # if selected_sport:
+    #     general_stats = Sport_Stats.objects.filter(teamID__in=[team['team'].id for team in teams], sportID=selected_sport)
+    # else:
+    #     general_stats = Sport_Stats.objects.filter(teamID__in=[team['team'].id for team in teams])
 
     context = {
         "teams": teams,
         "social_media": social_media,
-        "general_stats": general_stats,
-        "highest_game": highest_game,
-        "sports": sports,
-        "leagues": leagues,
     }
+    # "general_stats": general_stats,
+    # "highest_game": highest_game,
+    # "sports": sports,
+    # "leagues": leagues,
     return HttpResponse(template.render(context, request))
 
 @login_required

@@ -57,16 +57,20 @@ class Game(models.Model):
     Description = models.TextField(null=True)
     
 class Sport_Stats(models.Model):
-    teamID = models.ForeignKey(Team, on_delete=models.SET_NULL,null=True)
     score = models.IntegerField(default=0)
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
     draws = models.IntegerField(default=0)
-    leagueID = models.ForeignKey(League, on_delete=models.SET_NULL, null=True)
-    sportID = models.ForeignKey(Sport, on_delete=models.CASCADE)
+    # leagueID = models.ForeignKey(League, on_delete=models.SET_NULL, null=True)
+    # sportID = models.ForeignKey(Sport, on_delete=models.CASCADE)
     eLo = models.FloatField(null=True)
     gamesPlayed = models.IntegerField(default=0)
     winPercent = models.FloatField(default=0)
+    additionalStats = models.BinaryField(null=True)
+class Team_Sport_Stats(Sport_Stats):
+    teamID = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True)
+class Player_Sport_Stats(Sport_Stats):
+    playerID = models.ForeignKey(Player, on_delete=models.SET_NULL, null=True)
 class Social_Media(models.Model):
     playerID = models.ForeignKey(Player, on_delete=models.CASCADE)
     userName = models.CharField(max_length=32)
