@@ -109,9 +109,11 @@ def loginPage(request):
     return render(request, 'login.html')
 
 
+
 def logoutUser(request):
     logout(request)
     return redirect('login')
+
 
 
 def registerPage(request):
@@ -133,6 +135,7 @@ def registerPage(request):
             return redirect('register')
     context = {}
     return render(request, 'register.html', context)
+
 
 def index(request):
     user = None
@@ -275,7 +278,6 @@ def user_home(request):
     user = Custom_User.objects.get(emailAddress=request.user)
     template = loader.get_template('user_home.html')
     players = Player.objects.filter(userID_id=request.user.id)
-    players = Player.objects.filter(userID_id=request.user.id)
     teamIDs = players.values('teamID_id')
     teams = []
     for item in teamIDs: 
@@ -358,14 +360,6 @@ def create_new_league(request):
         except Exception as e:
             return redirect('create_league')
     return render(request, 'blank.html')
-
-@csrf_protect 
-def join_team(request, pk):
-    team = Team.objects.get(pk=pk)
-    user = Custom_User.objects.get(id=request.user.id)
-    print(user, team)
-    player = Player.objects.create(userID=user, teamID=team)
-    return redirect('.')
 
 @csrf_protect 
 def join_team(request, pk):
