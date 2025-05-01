@@ -23,6 +23,7 @@ class LeagueDetailView(DetailView):
         teams = Team.objects.filter(leagueID_id=context['object'].id)
         context['teams'] = teams
         return context
+    
 class TeamDetailView(DetailView):
     model = Team
 
@@ -30,9 +31,13 @@ class TeamDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         players = Player.objects.filter(teamID_id=context['object'].id)
         context['players'] = players
+        social_media = Team_Social_Media.objects.filter(teamID_id=context['object'].id)
+        context['social_media'] = social_media
         if players.filter(id=self.request.user.id).count() > 0:
             context['team_joinable'] = False
+            context['team_editable'] = True
         else:
+            context['team_editable'] = False
             players2 = Player.objects.filter(userID_id=self.request.user.id, teamID_id=context['object'].id)
             if players2.count() > 0:
                 context['team_joinable'] = False
@@ -45,6 +50,9 @@ class PlayerDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        sm = Social_Media.objects.all()
+        context['social_media'] = sm
+        print(context)
         return context
 
 # DETAIL VIEWS
@@ -57,28 +65,26 @@ class LeagueDetailView(DetailView):
         teams = Team.objects.filter(leagueID_id=context['object'].id)
         context['teams'] = teams
         return context
+
 class TeamDetailView(DetailView):
     model = Team
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         players = Player.objects.filter(teamID_id=context['object'].id)
+        social_media = Team_Social_Media.objects.filter(teamID_id=context['object'].id)
         context['players'] = players
+        context['social_media'] = social_media
         if players.filter(id=self.request.user.id).count() > 0:
             context['team_joinable'] = False
+            context['team_editable'] = True
         else:
+            context['team_editable'] = False
             players2 = Player.objects.filter(userID_id=self.request.user.id, teamID_id=context['object'].id)
             if players2.count() > 0:
                 context['team_joinable'] = False
             else:
                 context['team_joinable'] = True
-        return context
-
-class PlayerDetailView(DetailView):
-    model = Player
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
         return context
 
 # --- HTML PAGE VIEWS ---
@@ -278,6 +284,10 @@ def user_home(request):
     user = Custom_User.objects.get(emailAddress=request.user)
     template = loader.get_template('user_home.html')
     players = Player.objects.filter(userID_id=request.user.id)
+    social_media = []
+    for player in players.iterator():
+        items = Social_Media.objects.filter(playerID_id=player.id)
+        social_media.extend(items)
     teamIDs = players.values('teamID_id')
     teams = []
     for item in teamIDs: 
@@ -287,7 +297,8 @@ def user_home(request):
             "league": team.leagueID
         })
     context = {
-        "teams": teams
+        "teams": teams,
+        "social_media": social_media
     }
     return HttpResponse(template.render(context, request))
 
@@ -335,6 +346,30 @@ def create_new_account(request):
         return redirect('create_acct')
 
     return render(request, 'blank.html')
+
+@csrf_protect
+def add_player_social_media(request):
+    if request.method == 'GET':
+        context = {}
+        return render(request, 'add_player_social_media.html', context)
+    elif request.method == 'POST':
+        platform = request.POST.get('type')
+        userName = request.POST.get('userName')
+        players = Player.objects.filter(userID_id=request.user.id)
+        for player in players.iterator():
+            sm = Social_Media.objects.create(type=platform, userName=userName, playerID_id=player.id)
+        return redirect('user_home')
+
+@csrf_protect
+def add_team_social_media(request, pk):
+    if request.method == 'GET':
+        context = {}
+        return render(request, 'add_team_social_media.html', context)
+    elif request.method == 'POST':
+        platform = request.POST.get('type')
+        userName = request.POST.get('userName')
+        sm = Team_Social_Media.objects.create(type=platform, userName=userName, teamID_id=pk)
+        return redirect('.')
 
 # CREATE NEW TEAM RESPONSE
 @csrf_protect

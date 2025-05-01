@@ -74,17 +74,23 @@ header {
 }
 
 table {
-    border: 3pt solid var(--light);
-    background-color: var(--ultralight);
+    /* border: 2pt solid var(--dark); */
+    /* background-color: var(--light); */
     border-radius: 3pt;
     width: 100%;
 }
 
-th, td {
-    padding: 5pt;
+th {
+    background-color: var(--dark);
+    color: var(--ultralight);
 }
 
-tr:nth-child(even) {
+th, td {
+    padding: 5pt;
+    border-radius: 2pt;
+}
+
+tr {
     background-color: var(--light);
 }
 
@@ -93,9 +99,23 @@ form * {
 }
 
 button {
+    background-color: var(--dark);
+    color: var(--ultralight);
+    margin: 5pt 0;
+    border: 2pt outset var(--dark);
+    padding: 5pt;
+    border-radius: 3pt;
+}
+
+select {
     background-color: var(--light);
     margin: 5pt 0;
     border: 1pt solid var(--midtone);
     padding: 5pt;
     border-radius: 3pt;
+}
+
+hr {
+    border: solid 1pt var(--dark);
+    border-radius: 1pt;
 }

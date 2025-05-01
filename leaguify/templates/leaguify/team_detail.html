@@ -22,6 +22,26 @@
         </tr>
     {% endfor %}
     </table>
+    {% if social_media %}
+        <h3>Social Media</h3>
+        <table>
+            <tr>
+                <th>Platform</th>
+                <th>Username</th>
+            </tr>
+        {% for sm in social_media %}
+            <tr>
+                <td>{{ sm.type }}</td>
+                <td>{{ sm.userName }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% endif %}
+    {% if user.is_authenticated and not team_joinable %}
+    <a href="add_social_media">
+        <button>Add Social Media</button>
+    </a>
+    {% endif %}
     {% if user.is_authenticated and team_joinable %}
     <a href="join">
         <button>Join Team</button>

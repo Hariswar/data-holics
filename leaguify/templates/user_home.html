@@ -27,8 +27,26 @@
         {% endfor %}
     </table>
 {% else %}
-<p class="text_center">Your leagues will appear here. Join or create one to get started!</p>
+    <p class="text_center">Your teams will appear here. Join a team, create one in an active league, or create a league to get started!</p>
 {% endif %}
+
+<h3>Social Media</h3>
+{% if social_media %}
+<table>
+    <tr>
+        <th>Platform</th>
+        <th>Username</th>
+    </tr>
+    {% for sm in social_media %} 
+    <tr>
+        <td>{{ sm.type }}</td>
+        <td>{{ sm.userName }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+<a href="{% url 'add_player_social_media' %}"><button>Add Social Media</button></a>
+
 {% endblock %}
 
 
