@@ -83,7 +83,7 @@
 --     scoreFor INT NOT NULL,
 --     avgScore FLOAT NOT NULL,
 --     FOREIGN KEY (rootStatsID) REFERENCES leaguify_sport_stats(sportStatID) ON DELETE CASCADE ON UPDATE CASCADE
--- );
+ --);
 
 INSERT INTO leaguify_sport 
 values (0, 'baseball', FALSE),
