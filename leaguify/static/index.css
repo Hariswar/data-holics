@@ -119,3 +119,8 @@ hr {
     border: solid 1pt var(--dark);
     border-radius: 1pt;
 }
+
+.error {
+    color: red;
+    font-weight: 500;
+}

@@ -82,7 +82,10 @@ def loginPage(request):
             print(get_user(request))
             return redirect('user_home')
         else:
-            return HttpResponse("USERNAME OR PASSWORD DOES NOT EXIST")
+            context = {
+                "message": "Username or password is incorrect."
+            }
+            return render(request, 'login.html', context)
         # try:
         #     u = authenticate(request, username=email, password=password)
         #     print(u)
@@ -115,7 +118,9 @@ def registerPage(request):
                 lastName=request.POST.get('lname'),
             )
             print("custom")
-            return redirect('login')
+            user = authenticate(request, username=n_a.emailAddress, password=n_a.password)
+            login(request, user)
+            return redirect('user_home')
         except Exception as e:
             print(e)
             return redirect('register')
