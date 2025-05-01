@@ -6,11 +6,86 @@ from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth import authenticate, login, logout, get_user
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-# from django.contrib.auth.models import User
+from django.views.generic.detail import DetailView
+from django.views.generic.detail import DetailView
 from .models import *
 from .forms import *
 
 # Create your views here.
+
+# DETAIL VIEWS
+
+class LeagueDetailView(DetailView):
+    model = League
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        teams = Team.objects.filter(leagueID_id=context['object'].id)
+        context['teams'] = teams
+        return context
+    
+class TeamDetailView(DetailView):
+    model = Team
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        players = Player.objects.filter(teamID_id=context['object'].id)
+        context['players'] = players
+        social_media = Team_Social_Media.objects.filter(teamID_id=context['object'].id)
+        context['social_media'] = social_media
+        if players.filter(id=self.request.user.id).count() > 0:
+            context['team_joinable'] = False
+            context['team_editable'] = True
+        else:
+            context['team_editable'] = False
+            players2 = Player.objects.filter(userID_id=self.request.user.id, teamID_id=context['object'].id)
+            if players2.count() > 0:
+                context['team_joinable'] = False
+            else:
+                context['team_joinable'] = True
+        return context
+
+class PlayerDetailView(DetailView):
+    model = Player
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        sm = Social_Media.objects.all()
+        context['social_media'] = sm
+        print(context)
+        return context
+
+# DETAIL VIEWS
+
+class LeagueDetailView(DetailView):
+    model = League
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        teams = Team.objects.filter(leagueID_id=context['object'].id)
+        context['teams'] = teams
+        return context
+
+class TeamDetailView(DetailView):
+    model = Team
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        players = Player.objects.filter(teamID_id=context['object'].id)
+        social_media = Team_Social_Media.objects.filter(teamID_id=context['object'].id)
+        context['players'] = players
+        context['social_media'] = social_media
+        if players.filter(id=self.request.user.id).count() > 0:
+            context['team_joinable'] = False
+            context['team_editable'] = True
+        else:
+            context['team_editable'] = False
+            players2 = Player.objects.filter(userID_id=self.request.user.id, teamID_id=context['object'].id)
+            if players2.count() > 0:
+                context['team_joinable'] = False
+            else:
+                context['team_joinable'] = True
+        return context
 
 # --- HTML PAGE VIEWS ---
 
@@ -38,9 +113,15 @@ def loginPage(request):
         #     user = None
         # context = {'page':page}
     return render(request, 'login.html')
+
+
+
 def logoutUser(request):
     logout(request)
     return redirect('login')
+
+
+
 def registerPage(request):
     if request.method == 'POST':
         try:
@@ -60,6 +141,8 @@ def registerPage(request):
             return redirect('register')
     context = {}
     return render(request, 'register.html', context)
+
+
 def index(request):
     user = None
     try:
@@ -136,27 +219,75 @@ def create_acct(request):
 # CREATE NEW LEAGUE PAGE
 @csrf_protect
 def create_league(request):
-    sports = Sport.objects.all()
-    template = loader.get_template('create_league.html')
-    context = {
-        'sports': sports
-    }
-    return HttpResponse(template.render(context, request))
+    if request.method == 'GET':
+        sports = Sport.objects.all()
+        template = loader.get_template('create_league.html')
+        context = {
+            'sports': sports
+        }
+        return HttpResponse(template.render(context, request))
+    elif request.method == 'POST':
+        leagueName = request.POST.get('leagueName')
+        sportID = request.POST.get('sport')
+        teamName = request.POST.get('yourTeamName')
+        try:
+            league = League.objects.create(leagueName=leagueName, sportID_id=sportID)
+            team = Team.objects.create(teamName=teamName, leagueID_id=league.id)
+            player = Player.objects.create(teamID_id=team.id, userID_id=request.user.id)
+            return redirect('user_home')
+        except Exception as e:
+            return redirect('create_league')
+    if request.method == 'GET':
+        sports = Sport.objects.all()
+        template = loader.get_template('create_league.html')
+        context = {
+            'sports': sports
+        }
+        return HttpResponse(template.render(context, request))
+    elif request.method == 'POST':
+        leagueName = request.POST.get('leagueName')
+        sportID = request.POST.get('sport')
+        teamName = request.POST.get('yourTeamName')
+        try:
+            league = League.objects.create(leagueName=leagueName, sportID_id=sportID)
+            team = Team.objects.create(teamName=teamName, leagueID_id=league.id)
+            player = Player.objects.create(teamID_id=team.id, userID_id=request.user.id)
+            return redirect('user_home')
+        except Exception as e:
+            return redirect('create_league')
 
 # CREATE NEW TEAM PAGE
 @csrf_protect
-def create_team(request):
-    
-    template = loader.get_template('create_team.html')
-    context = {}
-    return HttpResponse(template.render(context, request))
+def create_team(request, pk):
+    if request.method == 'GET':
+        template = loader.get_template('create_team.html')
+        context = {}
+        players = Player.objects.filter(userID_id=request.user.id)
+        for team in players.values('teamID_id'):
+            teams = Team.objects.filter(id=team['teamID_id'], leagueID_id=pk)
+            if teams.count() > 0:
+                context['team_creatable'] = False
+                break
+        else:
+            context['team_creatable'] = True
+        return HttpResponse(template.render(context, request))
+    elif request.method == 'POST':
+        teamName = request.POST.get('teamName')
+        team = Team.objects.create(teamName=teamName, leagueID_id=pk)
+        player = Player.objects.create(teamID_id=team.id, userID_id=request.user.id)
+        return redirect('.')
+    return redirect('.')
 
 # USER HOME PAGE
 @login_required
 def user_home(request):
     user = Custom_User.objects.get(emailAddress=request.user)
     template = loader.get_template('user_home.html')
-    players = Player.objects.filter(id=request.user.id)
+    players = Player.objects.filter(userID_id=request.user.id)
+    social_media = []
+    for player in players.iterator():
+        items = Social_Media.objects.filter(playerID_id=player.id)
+        social_media.extend(items)
     teamIDs = players.values('teamID_id')
     teams = []
     for item in teamIDs: 
@@ -166,7 +297,8 @@ def user_home(request):
             "league": team.leagueID
         })
     context = {
-        "teams": teams
+        "teams": teams,
+        "social_media": social_media
     }
     return HttpResponse(template.render(context, request))
 
@@ -215,6 +347,30 @@ def create_new_account(request):
 
     return render(request, 'blank.html')
 
+@csrf_protect
+def add_player_social_media(request):
+    if request.method == 'GET':
+        context = {}
+        return render(request, 'add_player_social_media.html', context)
+    elif request.method == 'POST':
+        platform = request.POST.get('type')
+        userName = request.POST.get('userName')
+        players = Player.objects.filter(userID_id=request.user.id)
+        for player in players.iterator():
+            sm = Social_Media.objects.create(type=platform, userName=userName, playerID_id=player.id)
+        return redirect('user_home')
+
+@csrf_protect
+def add_team_social_media(request, pk):
+    if request.method == 'GET':
+        context = {}
+        return render(request, 'add_team_social_media.html', context)
+    elif request.method == 'POST':
+        platform = request.POST.get('type')
+        userName = request.POST.get('userName')
+        sm = Team_Social_Media.objects.create(type=platform, userName=userName, teamID_id=pk)
+        return redirect('.')
+
 # CREATE NEW TEAM RESPONSE
 @csrf_protect
 def create_new_team(request):
@@ -239,6 +395,14 @@ def create_new_league(request):
         except Exception as e:
             return redirect('create_league')
     return render(request, 'blank.html')
+
+@csrf_protect 
+def join_team(request, pk):
+    team = Team.objects.get(pk=pk)
+    user = Custom_User.objects.get(id=request.user.id)
+    print(user, team)
+    player = Player.objects.create(userID=user, teamID=team)
+    return redirect('.')
 
 @login_required
 def create_new_sport(request):

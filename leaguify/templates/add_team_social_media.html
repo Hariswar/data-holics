@@ -1,0 +1,22 @@
+{% extends 'master_template.html' %}
+
+{% block title %}
+<title>Leaguify | Team | Add Social Media</title>
+{% endblock %}
+
+{% block header %}
+<h1>Add Social Media</h1>
+{% endblock %}
+
+{% block body %}
+<form method="post" action="">
+    {% csrf_token %}
+    <label for="type">Platform: </label>
+    <input type="text" placeholder="Instagram" name="type" required>
+    <br>
+    <label for="userName">Username: </label>
+    <input type="text" placeholder="socialmedia123" name="userName" required>
+    <br>
+    <input type="submit">
+</form>
+{% endblock %}

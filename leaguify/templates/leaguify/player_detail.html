@@ -1,0 +1,27 @@
+{% extends 'master_template.html' %}
+
+{% block title %}
+    <title>Leaguify | Player Detail View</title>
+{% endblock %}
+
+{% block header %}
+    <h1>{{ object.userID.firstName }} {{ object.userID.lastName }}</h1> 
+{% endblock %}
+
+{% block body %}
+    <h3>Social Media</h3>
+    {% if social_media %}
+    <table>
+        <tr>
+            <th>Platform</th>
+            <th>Username</th>
+        </tr>
+        {% for sm in social_media %} 
+        <tr>
+            <td>{{ sm.type }}</td>
+            <td>{{ sm.userName }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'master_template.html' %}
+
+{% block title %}
+    <title>Leaguify | Team Detail View</title>
+{% endblock %}
+
+{% block header %}
+    <h1>{{ object.leagueName }}</h1>
+{% endblock %}
+
+{% block body %}
+    <h3>Players</h3>
+    <table>
+        <tr>
+            <th>Team Name</th>
+        </tr>
+    {% for team in teams %}
+        <tr>
+            <td><a href="../../team/{{ team.id }}">{{ team.teamName }}</a></td> 
+            <td>...</td>
+        </tr>
+    {% endfor %}
+    </table>
+    {% if team_creatable %}
+    <a href="create_team">
+        <button>Create Team</button>
+    </a>
+    {% endif %}
+{% endblock %}

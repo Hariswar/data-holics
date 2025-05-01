@@ -1,0 +1,50 @@
+{% extends 'master_template.html' %}
+
+{% block title %}
+    <title>Leaguify | Team Detail View</title>
+{% endblock %}
+
+{% block header %}
+    <h1>{{ object.teamName }}</h1>
+{% endblock %}
+
+{% block body %}
+    <h3>Players</h3>
+    <table>
+        <tr>
+            <th>Player Name</th>
+            <th>Email Address</th>
+        </tr>
+    {% for player in players %}
+        <tr>
+            <td><a href="../../player/{{ player.id }}">{{ player.userID.firstName }} {{ player.userID.lastName }}</a></td> 
+            <td>{{ player.userID.emailAddress }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+    {% if social_media %}
+        <h3>Social Media</h3>
+        <table>
+            <tr>
+                <th>Platform</th>
+                <th>Username</th>
+            </tr>
+        {% for sm in social_media %}
+            <tr>
+                <td>{{ sm.type }}</td>
+                <td>{{ sm.userName }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% endif %}
+    {% if user.is_authenticated and not team_joinable %}
+    <a href="add_social_media">
+        <button>Add Social Media</button>
+    </a>
+    {% endif %}
+    {% if user.is_authenticated and team_joinable %}
+    <a href="join">
+        <button>Join Team</button>
+    </a>
+    {% endif %}
+{% endblock %}

@@ -3,5 +3,7 @@ from .models import *
 
 admin.site.register(Custom_User)
 admin.site.register(Sport)
+admin.site.register(Team)
+admin.site.register(Social_Media)
 admin.site.register(League)
 # Register your models here.
