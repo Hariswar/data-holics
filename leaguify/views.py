@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.generic.detail import DetailView
 from django.views.generic.detail import DetailView
+from django.db.models import Q
 from .models import *
 from .forms import *
 
@@ -39,13 +40,23 @@ class LeagueDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         teams = Team.objects.filter(leagueID_id=context['object'].id)
+        plays = Plays.objects.filter(teamID__in=teams)
+        games = Game.objects.filter(id__in=plays.values('gameID'))
+        games = games.values()
+        for game in games:
+            game['teams'] = []
+            p = Plays.objects.filter(gameID_id=game['id'])
+            for i in p:
+                game['teams'].append(i.teamID)
         for team in teams:
-            players = Player.objects.filter(teamID_id=team.id, userID_id=self.request.user.id)
+            players = Player.objects.filter(teamID_id=team.id, userID__emailAddress=self.request.user.username)
             if players.count() > 0:
                 context['team_creatable'] = False
+                break
         else:
             context['team_creatable'] = True
         context['teams'] = teams
+        context['games'] = games
         return context
 
 class TeamDetailView(DetailView):
@@ -92,24 +103,11 @@ def loginPage(request):
                 "message": "Username or password is incorrect."
             }
             return render(request, 'login.html', context)
-        # try:
-        #     u = authenticate(request, username=email, password=password)
-        #     print(u)
-        #     user = User.objects.get(username=email)
-        # except:
-        #     return HttpResponse("USER DOES NOT EXIST")
-        # if(user.password != password):
-        #     user = None
-        # context = {'page':page}
     return render(request, 'login.html')
-
-
 
 def logoutUser(request):
     logout(request)
     return redirect('login')
-
-
 
 def registerPage(request):
     if request.method == 'POST':
@@ -146,8 +144,13 @@ def index(request):
 
 def all_leagues(request):
     template = loader.get_template('public_leagues.html')
+    items = []
+    leagues = League.objects.all()
+    for league in leagues:
+        team_ct = Team.objects.filter(leagueID=league).count()
+        items.append({ "league": league, "team_count": team_ct })
     context = {
-        'leagues': League.objects.all()
+        'leagues': items
     }
     return HttpResponse(template.render(context, request))
 
@@ -172,12 +175,16 @@ def create_league(request):
         leagueName = request.POST.get('leagueName')
         sportID = request.POST.get('sport')
         teamName = request.POST.get('yourTeamName')
-        empty = json.dumps({}).encode('utf-8')
+        stats = {}
+        for name in Tracks.objects.filter(sport_id=sportID):
+            stats[name.statisticName] = 0
+        empty = json.dumps(stats).encode('utf-8')
         try:
             league = League.objects.create(leagueName=leagueName, sportID_id=sportID)
             team = Team.objects.create(teamName=teamName, leagueID_id=league.id)
-            player = Player.objects.create(teamID_id=team.id, userID_id=request.user.id)
             team_stats = Team_Sport_Stats.objects.create(teamID_id=team.id, additionalStats=empty)
+            user = Custom_User.objects.get(emailAddress=request.user.username)
+            player = Player.objects.create(teamID_id=team.id, userID_id=user.id)
             player_stats = Player_Sport_Stats.objects.create(playerID_id=player.id, additionalStats=empty)
             return redirect('user_home')
         except Exception as e:
@@ -205,9 +212,8 @@ def create_team(request, pk):
         team = Team.objects.create(teamName=teamName, leagueID_id=pk)
         print(team, request.user.id)
         user = Custom_User.objects.get(emailAddress=request.user.username)
-        player = Player.objects.create(teamID=team, userID_id=user.id)
-        print(player)
         team_stats = Team_Sport_Stats.objects.create(teamID_id=team.id, additionalStats=empty)
+        player = Player.objects.create(teamID=team, userID_id=user.id)
         player_stats = Player_Sport_Stats.objects.create(playerID_id=player.id, additionalStats=empty)
         return redirect('.')
     return redirect('.')
@@ -217,7 +223,8 @@ def create_team(request, pk):
 def user_home(request):
     user = Custom_User.objects.get(emailAddress=request.user)
     template = loader.get_template('user_home.html')
-    players = Player.objects.filter(userID_id=request.user.id)
+    user = Custom_User.objects.get(emailAddress=request.user.username)
+    players = Player.objects.filter(userID_id=user.id)
     social_media = []
     stats = []
     additionalStats = []
@@ -259,26 +266,35 @@ def user_home(request):
     return HttpResponse(template.render(context, request))
 
 @login_required
-def create_game(request):
+def create_game(request, pk):
+    context = {}
     if request.method == 'POST':
         try:
-            didWin = request.POST.get('win')
-            team = None
-            if didWin == 'yes':
-                player = Player.objects.get(userID__emailAddress=request.user)
-                team = player.teamID
-            else:
-                try:
-                    winner = request.POST.get('teamWin')
-                    team = Team.objects.get(teamName=winner)
-                except:
-                    return redirect('create_game')
-            desc = request.POST.get('description')
-            new_game = Game.objects.create(team,desc)
-            return redirect('home')
-        except:
-            return redirect('create_game')
-    return render(request, 'create_game.html')
+            team1 = request.POST.get('team1')
+            team2 = request.POST.get('team2')
+            if team1 == team2: raise Exception("Both teams cannot be the same!")
+            team1winner = request.POST.get('team1winner')
+            team2winner = request.POST.get('team2winner')
+            winnerID = None
+            if team1winner != team2winner: 
+                if team1winner:
+                    winnerID = team1
+                else: 
+                    winnerID = team2
+            game = Game.objects.create(winnerID_id=winnerID, Description=request.POST.get('description'))
+            plays = Plays.objects.create(gameID=game, teamID_id=team1)
+            plays = Plays.objects.create(gameID=game, teamID_id=team2)
+            return redirect('.')
+        except Exception as e:
+            context["message"] = e
+    teams = Team.objects.filter(leagueID_id=pk)
+    league = League.objects.get(id=pk)
+    stats = Tracks.objects.filter(sport=league.sportID)
+    context["teams"] = teams
+    context["stats"] = stats
+    return render(request, 'create_game.html', context)
+
+
 # --- DATABASE FUNCTIONS + REDIRECTS ---
 
 # RESPONSE WHEN CREATING NEW ACCOUNT
@@ -311,7 +327,8 @@ def add_player_social_media(request):
     elif request.method == 'POST':
         platform = request.POST.get('type')
         userName = request.POST.get('userName')
-        players = Player.objects.filter(userID_id=request.user.id)
+        user = Custom_User.objects.get(emailAddress=request.user.username)
+        players = Player.objects.filter(userID_id=user.id)
         for player in players.iterator():
             sm = Social_Media.objects.create(type=platform, userName=userName, playerID_id=player.id)
         return redirect('user_home')
@@ -346,7 +363,8 @@ def create_new_league(request):
         try:
             league = League.objects.create(leagueName=leagueName, sportID_id=sportID)
             team = Team.objects.create(teamName=teamName, leagueID_id=league.id)
-            player = Player.objects.create(teamID_id=team.id, userID_id=request.user.id)
+            user = Custom_User.objects.get(emailAddress=request.user.username)
+            player = Player.objects.create(teamID_id=team.id, userID_id=user.id)
             return redirect('user_home')
         except Exception as e:
             return redirect('create_league')
@@ -364,6 +382,7 @@ def join_team(request, pk):
 def create_new_sport(request):
     if request.method == 'POST':
         sportName = request.POST.get('sport')
+        statistics = request.POST.get('statistics')
         i = None
         try:
             i=Sport.objects.get(sportName=sportName)
@@ -378,6 +397,8 @@ def create_new_sport(request):
             isIndividual = False
         try:
             sport = Sport.objects.create(sportName=sportName, individualSport=isIndividual)
+            for stat in str(statistics).split(','):
+                tracks = Tracks.objects.create(sport=sport, statisticName=stat)
             return redirect('user_home')
         except:
             return redirect('create_sport')

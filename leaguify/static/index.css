@@ -124,3 +124,26 @@ hr {
     color: red;
     font-weight: 500;
 }
+
+.games {
+    display: flex;
+    overflow-x: scroll;
+    width: max-content;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+.games table {
+    min-width: 120pt;
+    background-color: var(--dark);
+    margin: 0 5pt;
+}
+
+.games table tr {
+    background-color: var(--midtone);
+    color: var(--ultralight);
+}
+
+.games table th {
+    border-radius: 0;
+}

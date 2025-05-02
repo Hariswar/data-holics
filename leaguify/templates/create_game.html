@@ -9,17 +9,69 @@
 {% endblock %}
 
 {% block body %}
+
+{% if message %}
+<p class="error">{{ message }}</p>
+{% endif %}
+
 <form method ="POST" action="">
     {% csrf_token %}
-    <label>Did You Win? </label>
-    <input type="checkbox" name="win" value="yes"/>
+    <label for="team1">Team 1: </label>
+    <select name="team1">
+        {% for team in teams %}
+        <option value="{{ team.id }}">{{ team.teamName }}</option>
+        {% endfor %}
+    </select>
+    <label for="team1winner">Winner: </label>
+    <input type="checkbox" name="team1winner">
     <br>
-    <label>If you didn't win, who won?</label>
-    <input type="text" name="teamWin" placeholder="Enter Team Name"/>
+    <label for="team1stats">Stats:</label>
+    <table>
+        <tr>
+        {% for stat in stats %}
+        <th>{{ stat.statisticName }}</th>
+        {% endfor %}
+        </tr>
+        <tr>
+        {% for stat in stats %}
+        <td class="text_center"><input type="number" name="team1{{ stat }}"></td>
+        {% endfor %}
+        </tr>
+    </table>
+
     <br>
-    <label>Description: </label>
-    <input type="text" name="description" placeholder="Describe the game..."/>
     <br>
-    <input type="submit" value="Log"/>
+    <label for="team2">Team 2: </label>
+    <select name="team2">
+        {% for team in teams %}
+        <option value="{{ team.id }}">{{ team.teamName }}</option>
+        {% endfor %}
+    </select>
+    <label for="team2winner">Winner: </label>
+    <input type="checkbox" name="team2winner">
+    <br> 
+    <label for="team2stats">Stats:</label>
+    <table>
+        <tr>
+        {% for stat in stats %}
+        <th>{{ stat.statisticName }}</th>
+        {% endfor %}
+        </tr>
+        <tr>
+        {% for stat in stats %}
+        <td class="text_center"><input type="number" name="team2{{ stat }}"></td>
+        {% endfor %}
+        </tr>
+    </table>
+    <br>
+    <br>
+    <label for="description">Game Description: </label>
+    <input name="description" type="text">
+    <br>
+    <input type="submit">
 </form>
+
+<p>If both teams (or neither) are marked as winners, game will be logged as a draw/tie.</p>
+
+
 {% endblock %}

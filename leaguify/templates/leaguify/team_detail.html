@@ -27,18 +27,26 @@
     <h3>Statistics</h3>
     <table>
         <tr>
-            <th>Header</th>
+            <!-- <th>Team Name</th> -->
+            <th>W</th>
+            <th>L</th>
+            {% if stats.draws %}
+            <th>D</th>
+            {% endif %}
             {% for key in additional_stats.keys %}
                 <th>{{ key }}</th>
             {% endfor %}
         </tr>
         <tr>
-            <td>Not Header</td>
+            <!-- <td>{{ object.teamName }}</td> -->
+            <td>{{ stats.wins }}</td>
+            <td>{{ stats.losses }}</td>
+            {% if stats.draws %}
+            <td>{{ stats.draws }}</td>
+            {% endif %}
             {% for value in additional_stats.values %}
                 <td>{{ value }}</td>
             {% endfor %}
-            <td>{{ stats.wins }}</td>
-            <td>{{ stats.losses }}</td>
         </tr>
     </table>
     {% else %}

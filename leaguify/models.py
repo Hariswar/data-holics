@@ -51,7 +51,7 @@ class Player(models.Model):
     userID = models.ForeignKey(Custom_User, on_delete=models.SET_NULL, null=True)
     teamID = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True)
 class Game(models.Model):
-    winnerID = models.ForeignKey(Team, on_delete=models.CASCADE)
+    winnerID = models.ForeignKey(Team, on_delete=models.CASCADE, null=True)
     # leagueID = models.ForeignKey(League, on_delete=models.SET_NULL, null=True)
     # sportID = models.ForeignKey(Sport, on_delete=models.CASCADE)
     Description = models.TextField(null=True)
@@ -83,7 +83,6 @@ class Plays(models.Model):
     # leagueID = models.ForeignKey(League, on_delete=models.SET_NULL, null=True)
     teamID = models.ForeignKey(Team, on_delete=models.SET_NULL, null=True)
     gameID = models.ForeignKey(Game, on_delete=models.SET_NULL, null=True)
-
-
-
-
+class Tracks(models.Model):
+    sport = models.ForeignKey(Sport, on_delete=models.CASCADE, null=False)
+    statisticName = models.CharField(max_length=32)

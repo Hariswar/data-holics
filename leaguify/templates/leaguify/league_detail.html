@@ -1,7 +1,7 @@
 {% extends 'master_template.html' %}
 
 {% block title %}
-    <title>Leaguify | Team Detail View</title>
+    <title>Leaguify | League Detail View</title>
 {% endblock %}
 
 {% block header %}
@@ -9,11 +9,29 @@
 {% endblock %}
 
 {% block body %}
-    <h3>Players</h3>
+    <h3>Games</h3>
+    <div class="games">
+        {% for game in games %}
+            <table>
+                <tr>
+                    <th style="font-size: x-small;">{{ game.Description }}</th>
+                </tr>
+                {% for team in game.teams %}
+                <tr>
+                <td {% if team.id == game.winnerID %}style="font-weight: bold;"{% endif %}>{{ team.teamName }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% endfor %}
+    </div>
+    <a href="create_game"><button>Log Game</button></a>
+
+    <h3>Teams</h3>
     <table>
         <tr>
             <th>Team Name</th>
         </tr>
+    {{ stats }}
     {% for team in teams %}
         <tr>
             <td><a href="../../team/{{ team.id }}">{{ team.teamName }}</a></td> 
