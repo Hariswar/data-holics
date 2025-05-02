@@ -34,7 +34,7 @@
         </tr>
         <tr>
         {% for stat in stats %}
-        <td class="text_center"><input type="number" name="team1{{ stat }}"></td>
+        <td class="text_center"><input type="number" name="team1{{ stat.statisticName }}"></td>
         {% endfor %}
         </tr>
     </table>
@@ -59,7 +59,7 @@
         </tr>
         <tr>
         {% for stat in stats %}
-        <td class="text_center"><input type="number" name="team2{{ stat }}"></td>
+        <td class="text_center"><input type="number" name="team2{{ stat.statisticName }}"></td>
         {% endfor %}
         </tr>
     </table>

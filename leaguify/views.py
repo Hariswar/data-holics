@@ -55,7 +55,7 @@ class LeagueDetailView(DetailView):
                 break
         else:
             context['team_creatable'] = True
-        context['teams'] = teams
+        context['teams'] = [{ "team": t, "stats": Team_Sport_Stats.objects.get(teamID=t) } for t in teams]
         context['games'] = games
         return context
 
@@ -207,7 +207,11 @@ def create_team(request, pk):
             context['team_creatable'] = True
         return HttpResponse(template.render(context, request))
     elif request.method == 'POST':
-        empty = json.dumps({}).encode('utf-8')
+        league = League.objects.get(id=pk)
+        stats = {}
+        for name in Tracks.objects.filter(sport_id=league.sportID):
+            stats[name.statisticName] = 0
+        empty = json.dumps(stats).encode('utf-8')
         teamName = request.POST.get('teamName')
         team = Team.objects.create(teamName=teamName, leagueID_id=pk)
         print(team, request.user.id)
@@ -275,15 +279,42 @@ def create_game(request, pk):
             if team1 == team2: raise Exception("Both teams cannot be the same!")
             team1winner = request.POST.get('team1winner')
             team2winner = request.POST.get('team2winner')
+            team1Stats = Team_Sport_Stats.objects.get(teamID_id=team1)
+            team2Stats = Team_Sport_Stats.objects.get(teamID_id=team2)
             winnerID = None
             if team1winner != team2winner: 
                 if team1winner:
                     winnerID = team1
+                    team1Stats.wins += 1
+                    team2Stats.losses += 1
                 else: 
                     winnerID = team2
+                    team1Stats.losses += 1
+                    team2Stats.wins += 1
+            else:
+                if team1Stats.draws != None:
+                    team1Stats.draws += 1
+                if team2Stats.draws != None:
+                    team2Stats.draws += 1
+            league = League.objects.get(id=pk)
+            stats = Tracks.objects.filter(sport=league.sportID)
+            for stat in stats:
+                team1stat = request.POST.get(f"team1{stat.statisticName}")
+                team1statDict = json.loads(team1Stats.additionalStats)
+                if team1stat == '': team1stat = 0
+                team1statDict[stat.statisticName] += int(team1stat)
+                team1Stats.additionalStats = json.dumps(team1statDict).encode('utf-8')
+                team1Stats.save()
+
+                team2stat = request.POST.get(f"team2{stat.statisticName}")
+                team2statDict = json.loads(team2Stats.additionalStats)
+                if team2stat == '': team2stat = 0
+                team2statDict[stat.statisticName] += int(team2stat)
+                team2Stats.additionalStats = json.dumps(team2statDict).encode('utf-8')
+                team2Stats.save()
             game = Game.objects.create(winnerID_id=winnerID, Description=request.POST.get('description'))
-            plays = Plays.objects.create(gameID=game, teamID_id=team1)
-            plays = Plays.objects.create(gameID=game, teamID_id=team2)
+            _ = Plays.objects.create(gameID=game, teamID_id=team1)
+            _ = Plays.objects.create(gameID=game, teamID_id=team2)
             return redirect('.')
         except Exception as e:
             context["message"] = e

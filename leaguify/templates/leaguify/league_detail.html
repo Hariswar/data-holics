@@ -30,12 +30,21 @@
     <table>
         <tr>
             <th>Team Name</th>
+            <th>W</th>
+            <th>L</th>
+            {% if team.stats.draws %}
+            <th>D</th>
+            {% endif %}
         </tr>
     {{ stats }}
     {% for team in teams %}
         <tr>
-            <td><a href="../../team/{{ team.id }}">{{ team.teamName }}</a></td> 
-            <td>...</td>
+            <td><a href="../../team/{{ team.team.id }}">{{ team.team.teamName }}</a></td> 
+            <td>{{ team.stats.wins }}</td>
+            <td>{{ team.stats.losses }}</td>
+            {% if team.stats.draws %}
+            <td>{{ team.stats.draws }}</td>
+            {% endif %}
         </tr>
     {% endfor %}
     </table>
