@@ -18,13 +18,15 @@
                 </tr>
                 {% for team in game.teams %}
                 <tr>
-                <td {% if team.id == game.winnerID %}style="font-weight: bold;"{% endif %}>{{ team.teamName }}</td>
+                <td {% if team.id == game.winnerID_id %}style="font-weight: bold;"{% endif %}>{{ team.teamName }}</td>
                 </tr>
                 {% endfor %}
             </table>
         {% endfor %}
     </div>
+    {% if not team_creatable %}
     <a href="create_game"><button>Log Game</button></a>
+    {% endif %}
 
     <h3>Teams</h3>
     <table>

@@ -234,6 +234,7 @@ def user_home(request):
     additionalStats = []
     for player in players.iterator():
         player_stats = Player_Sport_Stats.objects.get(playerID_id=player.id)
+        player.teamID.leagueID.sportID
         stats.append(player_stats)
         additionalStats.append(json.loads(player_stats.additionalStats))
         items = Social_Media.objects.filter(playerID_id=player.id)
@@ -428,8 +429,9 @@ def create_new_sport(request):
             isIndividual = False
         try:
             sport = Sport.objects.create(sportName=sportName, individualSport=isIndividual)
-            for stat in str(statistics).split(','):
-                tracks = Tracks.objects.create(sport=sport, statisticName=stat)
+            if statistics != '':
+                for stat in str(statistics).split(','):
+                    tracks = Tracks.objects.create(sport=sport, statisticName=stat)
             return redirect('user_home')
         except:
             return redirect('create_sport')
