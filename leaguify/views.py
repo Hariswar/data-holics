@@ -180,7 +180,12 @@ def create_league(request):
             stats[name.statisticName] = 0
         empty = json.dumps(stats).encode('utf-8')
         try:
-            league = League.objects.create(leagueName=leagueName, sportID_id=sportID)
+            league = None
+            try:
+                league = League.objects.get(leagueName=leagueName, sportID=sportID)
+            except Exception as e:
+                print(e)
+                league = League.objects.create(leagueName=leagueName, sportID_id=sportID)
             team = Team.objects.create(teamName=teamName, leagueID_id=league.id)
             team_stats = Team_Sport_Stats.objects.create(teamID_id=team.id, additionalStats=empty)
             user = Custom_User.objects.get(emailAddress=request.user.username)
@@ -233,6 +238,8 @@ def user_home(request):
     stats = []
     additionalStats = []
     for player in players.iterator():
+        if player.teamID == None:
+            continue
         player_stats = Player_Sport_Stats.objects.get(playerID_id=player.id)
         player.teamID.leagueID.sportID
         stats.append(player_stats)
@@ -242,6 +249,8 @@ def user_home(request):
     teamIDs = players.values('teamID_id')
     teams = []
     for item in teamIDs: 
+        if item['teamID_id'] == None:
+            continue
         team = Team.objects.get(id=item['teamID_id'])
         teams.append({
             "team": team,
@@ -269,6 +278,21 @@ def user_home(request):
     # "sports": sports,
     # "leagues": leagues,
     return HttpResponse(template.render(context, request))
+@login_required
+def delete_league(request, pk):
+    league = League.objects.get(id = pk)
+    if request.method == 'POST':
+        league.delete()  
+        return redirect('user_home')
+    return render(request, 'delete.html', {'obj':league.leagueName})
+
+@login_required
+def delete_team(request, pk):
+    team = Team.objects.get(id = pk)
+    if request.method == 'POST':
+        team.delete() 
+        return redirect('user_home')
+    return render(request, 'delete.html', {'obj':team.teamName})
 
 @login_required
 def create_game(request, pk):

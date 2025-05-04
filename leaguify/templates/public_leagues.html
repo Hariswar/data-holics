@@ -16,7 +16,7 @@
     </tr>
 {% for league in leagues %}
 <tr>
-    <td><a href="league/{{ league.league.id }}">{{ league.league.leagueName }}</a></td>
+    <td><a href="league/{{ league.league.id }}">{{ league.league.leagueName }}</a><p> </p><a href="{% url 'delete_league' league.league.id %}">Delete </a></td>
     <td>{{ league.team_count }}</td>
 </tr>
 {% endfor %}

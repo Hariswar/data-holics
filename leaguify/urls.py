@@ -23,4 +23,6 @@ urlpatterns = [
     path("add_player_social_media", views.add_player_social_media, name="add_player_social_media"),
     path("team/<pk>/join", views.join_team, name="join_team"),
     path("all_leagues", views.all_leagues, name="all_leagues"),
+    path("delete/league/<pk>/", views.delete_league, name="delete_league"),
+    path("delete/team/<pk>/", views.delete_team, name="delete_team"),
 ]
