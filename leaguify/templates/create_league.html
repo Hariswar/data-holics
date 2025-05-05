@@ -20,6 +20,7 @@
 {% if type == 'update' %}
 <form method="post" class="text_center" action="">
     {% csrf_token %}
+    
     <label for="leagueName">League Name: </label>
     <input type="text" name="leagueName" placeholder="League Name" value="{{ lname }}"required>
     <br>
