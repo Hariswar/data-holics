@@ -168,7 +168,8 @@ def create_league(request):
         sports = Sport.objects.all()
         template = loader.get_template('create_league.html')
         context = {
-            'sports': sports
+            'sports': sports,
+            'type' : 'create'
         }
         return HttpResponse(template.render(context, request))
     elif request.method == 'POST':
@@ -461,4 +462,48 @@ def create_new_sport(request):
             return redirect('create_sport')
     return render(request, 'create_sport.html')
 
+@login_required
+def updateLeague(request, pk):
+    league = League.objects.get(id=pk)
+    league_name = league.leagueName
+    league_sport = league.sportID.sportName
+    user = Custom_User.objects.get(emailAddress=request.user.username)
+    if request.method == 'GET':
+        sports = Sport.objects.all()
+        template = loader.get_template('create_league.html')
+        context = {
+            'sports': sports,
+            'selected_sport' : league_sport,
+            'lname' : league_name,
+            'type' : 'update',
+        }
+        return HttpResponse(template.render(context, request))
+    elif request.method == 'POST':
+        try:
+            league.leagueName = request.POST.get('leagueName')
+            league.sportID_id = request.POST.get('sport')
+            league.save()
+            teamName = request.POST.get('yourTeamName')
+            if teamName != "":
+                try:
+                    team = Team.objects.get(teamName=teamName)
+                except:
+                    try:
+                        stats = {}
+                        for name in Tracks.objects.filter(sport_id=league.sportID):
+                            stats[name.statisticName] = 0
+                        empty = json.dumps(stats).encode('utf-8')
+                        team = Team.objects.create(teamName=teamName, leagueID_id = league.id)
+                        team_stats = Team_Sport_Stats.objects.create(teamID_id=team.id, additionalStats=empty)
+                        player = Player.objects.create(teamID_id=team.id, userID_id=user.id)
+                        player_stats = Player_Sport_Stats.objects.create(playerID_id=player.id, additionalStats=empty)
+                        return redirect('user_home')
+                    except Exception as e:
+                        print(e)
+                        redirect('create_league')
+        except Exception as e:
+            print(e)
+            return redirect('create_league')
+        return redirect('user_home')
+    return 
 

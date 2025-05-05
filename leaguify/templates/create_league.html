@@ -1,14 +1,41 @@
 {% extends 'master_template.html' %}
 
 {% block title %}
+{% if type == 'create' %}
 <title>Leaguify | Create League</title>
+{% else %}
+<title>Leaguify | Update League</title>
+{% endif %}
 {% endblock %}
 
 {% block header %}
+{% if type == 'create' %}
 <h1>Create League</h1>
+{% else %}
+<h1>Update League</h1>
+{% endif %}
 {% endblock %}
 
 {% block body %}
+{% if type == 'update' %}
+<form method="post" class="text_center" action="">
+    {% csrf_token %}
+    <label for="leagueName">League Name: </label>
+    <input type="text" name="leagueName" placeholder="League Name" value="{{ lname }}"required>
+    <br>
+    <label for="sport">Sport: </label>
+    <select name="sport">
+        {% for sport in sports %}
+        <option value="{{ sport.id }}" {% if sport.sportName == selected_sport %}selected{% endif %}>{{ sport.sportName }}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <label for="yourTeamName">Your Team Name: </label>
+    <input type="text" name="yourTeamName" placeholder="Your Team Name (leave blank to just update the league)">
+    <br>
+    <input type="submit" value="Update">
+</form>
+{% else %}
 <form method="post" class="text_center" action="">
     {% csrf_token %}
     <label for="leagueName">League Name: </label>
@@ -26,4 +53,5 @@
     <br>
     <input type="submit" value="Create">
 </form>
+{% endif %}
 {% endblock %}
