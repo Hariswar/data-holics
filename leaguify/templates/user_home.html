@@ -20,7 +20,7 @@
         </tr>
         {% for t in teams %}
         <tr>
-            <td><a href="team/{{ t.team.id }}">{{ t.team.teamName }}</a></td>
+            <td><a href="team/{{ t.team.id }}">{{ t.team.teamName }}</a> <a href="{% url 'delete_team' t.team.id%}">Delete</a> <a href="{% url 'update_team' t.team.id %}">Edit</a></td>
             <td><a href="league/{{ t.league.id }}">{{ t.league.leagueName }}</a></td>
             <td>{{ t.league.sportID.sportName }}</td>
         </tr>

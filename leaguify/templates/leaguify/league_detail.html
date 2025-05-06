@@ -41,7 +41,7 @@
     {{ stats }}
     {% for team in teams %}
         <tr>
-            <td><a href="../../team/{{ team.team.id }}">{{ team.team.teamName }}</a><p></p><a href="{% url 'delete_team' team.team.id%}">Delete</a></td> 
+            <td><a href="../../team/{{ team.team.id }}">{{ team.team.teamName }}</a><p></p><a href="{% url 'delete_team' team.team.id%}">Delete</a> <a href="{% url 'update_team' team.team.id %}">Edit</a></td> 
             <td>{{ team.stats.wins }}</td>
             <td>{{ team.stats.losses }}</td>
             {% if team.stats.draws %}
@@ -56,4 +56,6 @@
     </a>
     {% endif %}
     <a href="{% url 'delete_league' object.id%}">Delete League</a>
+    <br>
+    <a href="{% url 'update_league' object.id%}">Edit League</a>
 {% endblock %}

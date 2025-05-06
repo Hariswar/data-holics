@@ -1,17 +1,54 @@
 {% extends 'master_template.html' %}
 
 {% block title %}
+{% if type == 'edit' %}
+<title>Leaguify | Update Team</title>
+{% else %}
 <title>Leaguify | Create Team</title>
+{% endif %}
 {% endblock %}
 
 {% block header %}
+{% if type == 'edit' %}
+<h1>Update Team</h1>
+{% else %}
 <h1>Create Team</h1>
+{% endif %}
 {% endblock %}
 
 {% block body %}
-<form method='post' action="" class="text_center">
+{% if type == 'edit' %}
+{% if isuser == 'true' %}
+<form method='post' action="{% url 'update_team' name.id %}" class="text_center">
+    {% csrf_token %}
+    <input type="text" name="teamName" value="{{name.teamName}}" placeholder="Team Name" maxlength="32" required>
+    <br>
+    <select name="leagueName">
+        {% for league in leagues %}
+        <option value="{{league.id}}" {% if league.leagueName == lcurrent %}selected{% endif %}>{{league.leagueName}}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <small>If you change the User from yourself you will lose editing access</small>
+    <br>
+    <select name="userName">
+        {% for user in users %}
+        <option value="{{user.id}}" {% if user.emailAddress == cuser.emailAddress %}selected{% endif %}>{{user.emailAddress}}</option>
+        {% endfor %}
+    </select>
+    <br>
+    <input type="submit" value="Update">
+</form>
+{% else %}
+<h1>You're Not Allowed to Edit This Team</h1>
+<a href="{{request.META.HTTP_REFERER}}">Go Back</a>
+{% endif %}
+{% else %}
+<form method='post' action="{% url 'create_new_team' %}" class="text_center">
     {% csrf_token %}
     <input type="text" name="teamName" placeholder="Team Name" maxlength="32" required>
+    
     <input type="submit" value="Create">
 </form>
+{% endif %}
 {% endblock %}

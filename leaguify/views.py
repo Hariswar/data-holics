@@ -505,5 +505,56 @@ def updateLeague(request, pk):
             print(e)
             return redirect('create_league')
         return redirect('user_home')
-    return 
+    return redirect('user_home')
+def edit_team(request, pk):
+    team = Team.objects.get(id=pk)
+    user = Custom_User.objects.get(emailAddress=request.user.username)
+    player = Player.objects.get(teamID=pk)
+    league = League.objects.get(id=team.leagueID.id)
+    isuser = 'false'
+    if user.id == player.userID.id:
+        isuser = 'true'
+    if request.method == 'GET':
+        leagues = League.objects.all()
+        users = Custom_User.objects.all()
+        template = loader.get_template('create_team.html')
+        context = {
+            'name' : team,
+            'lcurrent' : league.leagueName,
+            'leagues' : leagues,
+            'users' : users,
+            'cuser' : user,
+            'isuser' : isuser,
+            'type' : 'edit'
+        }
+        return HttpResponse(template.render(context, request))
+    elif request.method == 'POST':
+        n_name = request.POST.get('teamName')
+        n_league = request.POST.get('leagueName')
+        n_user = request.POST.get('userName')
+        try:
+            uleague = League.objects.get(id=n_league)
+            try:
+                error = Team.objects.get(teamName=team.teamName)
+                if error.id != team.id and error.leagueID == uleague:
+                    return redirect('update_team')
+            except:
+                pass
+            team.teamName = n_name
+            team.leagueID = uleague
+            team.save()
+            nuser = Custom_User.objects.get(id=n_user)
+            if nuser.id != user.id:
+                try:
+                    uplay = Player.objects.get(userID=nuser.id, teamID__leagueID=uleague.id)
+                    return redirect('update_team')
+                except:
+                    pass
+                player.userID = nuser.id
+                player.save()
+            return redirect('user_home')
+        except:
+            pass
+    return redirect('all_leagues')
+
 
