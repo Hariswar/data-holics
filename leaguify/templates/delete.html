@@ -12,6 +12,9 @@
 
 <form method="POST" action ="">
     {% csrf_token %}
+    {% if message %}
+	<p class='error'>{{ message }}</p>
+    {% endif %}
     <p>Are you sure you want to delete "{{obj}}"?</p>
     
     <a href="{{request.META.HTTP_REFERER}}">Go Back</a>

@@ -16,6 +16,25 @@ import json
 
 # Create your views here.
 
+# HELPER FUNCTIONS
+def is_in_league(user, league):
+  user = Custom_User.objects.get(emailAddress=user.username)
+  players = Player.objects.filter(userID=user.id)
+  teams = Team.objects.filter(leagueID_id=league.id)
+  for player in players:
+    for team in teams:
+      if player.teamID == team:
+        return True
+  return False
+
+def is_on_team(user, team):
+  user = Custom_User.objects.get(emailAddress=user.username)
+  players = Player.objects.filter(userID=user.id)
+  for player in players:
+    if player.teamID == team:
+      return True
+  return False
+
 # DETAIL VIEWS
 
 class PlayerDetailView(DetailView):
@@ -283,16 +302,22 @@ def user_home(request):
 def delete_league(request, pk):
     league = League.objects.get(id = pk)
     if request.method == 'POST':
-        league.delete()  
-        return redirect('user_home')
+        user = request.user
+        if(is_in_league(user, league)): # Note: no 'else' statement. If bad permissions nothing happens.
+          league.delete()
+          return redirect('user_home')
+        return render(request, 'delete.html', {'obj':league.leagueName, "message": "Can't delete this League! You must belong to a League to delete it." })
     return render(request, 'delete.html', {'obj':league.leagueName})
+
 
 @login_required
 def delete_team(request, pk):
     team = Team.objects.get(id = pk)
     if request.method == 'POST':
-        team.delete() 
-        return redirect('user_home')
+        if(is_on_team(request.user, team)):
+          team.delete() 
+          return redirect('user_home')
+        return render(request, 'delete.html', {'obj':team.teamName, "message": "Can't delete this Team! You must belong to a Team to delete it."})
     return render(request, 'delete.html', {'obj':team.teamName})
 
 @login_required
