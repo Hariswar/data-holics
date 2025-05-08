@@ -355,14 +355,14 @@ def create_game(request, pk):
                 if team1stat == '': team1stat = 0
                 team1statDict[stat.statisticName] += int(team1stat)
                 team1Stats.additionalStats = json.dumps(team1statDict).encode('utf-8')
-                team1Stats.save()
 
                 team2stat = request.POST.get(f"team2{stat.statisticName}")
                 team2statDict = json.loads(team2Stats.additionalStats)
                 if team2stat == '': team2stat = 0
                 team2statDict[stat.statisticName] += int(team2stat)
                 team2Stats.additionalStats = json.dumps(team2statDict).encode('utf-8')
-                team2Stats.save()
+            team1Stats.save()
+            team2Stats.save()
             game = Game.objects.create(winnerID_id=winnerID, Description=request.POST.get('description'))
             _ = Plays.objects.create(gameID=game, teamID_id=team1)
             _ = Plays.objects.create(gameID=game, teamID_id=team2)
