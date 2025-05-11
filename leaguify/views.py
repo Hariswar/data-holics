@@ -8,11 +8,22 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.generic.detail import DetailView
 from django.views.generic.detail import DetailView
-from django.db.models import Q
+from django.db.models import Q, Avg, Sum, Count
 from .models import *
 from .forms import *
 
 import json
+
+# DICTIONARY ADDITION (lol)
+def add_dicts(lhs: dict, rhs: dict):
+    new_dict = {}
+    rem = rhs.keys()
+    for k, v in lhs:
+        new_dict[k] = v
+        if k in rhs:
+            new_dict[k] += rhs[k]
+    for k in rem:
+        new_dict[k] = rhs[rem]
 
 # Create your views here.
 
@@ -257,15 +268,11 @@ def user_home(request):
     social_media = []
     stats = []
     additionalStats = []
-    for player in players.iterator():
-        if player.teamID == None:
-            continue
-        player_stats = Player_Sport_Stats.objects.get(playerID_id=player.id)
-        player.teamID.leagueID.sportID
-        stats.append(player_stats)
-        additionalStats.append(json.loads(player_stats.additionalStats))
-        items = Social_Media.objects.filter(playerID_id=player.id)
-        social_media.extend(items)
+    social_media = Social_Media.objects.filter(playerID__userID_id=user.id).values('userName', 'type')
+    ss = Player_Sport_Stats.objects.filter(playerID__userID_id=user.id)
+    ss= ss.values('playerID__teamID__leagueID__sportID__sportName').annotate(total_wins=Sum("wins"), total_losses=Sum("losses"), total_draws=Sum("draws"))
+    # for i in ss:
+    print(ss)
     teamIDs = players.values('teamID_id')
     teams = []
     for item in teamIDs: 
@@ -277,20 +284,10 @@ def user_home(request):
             "league": team.leagueID
         })
 
-    # highest_game = Sport_Stats.objects.order_by('-score').first()
-    # sports = Sport.objects.all()
-    # leagues = League.objects.all()
-    # selected_sport = request.POST.get('sport')
-
-    # if selected_sport:
-    #     general_stats = Sport_Stats.objects.filter(teamID__in=[team['team'].id for team in teams], sportID=selected_sport)
-    # else:
-    #     general_stats = Sport_Stats.objects.filter(teamID__in=[team['team'].id for team in teams])
-
     context = {
         "teams": teams,
         "social_media": social_media,
-        "stats": stats,
+        "stats": ss,
         "additional_stats": additionalStats,
     }
     # "general_stats": general_stats,
@@ -338,15 +335,33 @@ def create_game(request, pk):
                     winnerID = team1
                     team1Stats.wins += 1
                     team2Stats.losses += 1
+                    for player_stats in Player_Sport_Stats.objects.filter(playerID__teamID=team1):
+                        player_stats.wins += 1
+                        player_stats.save()
+                    for player_stats in Player_Sport_Stats.objects.filter(playerID__teamID=team2):
+                        player_stats.losses += 1
+                        player_stats.save()
                 else: 
                     winnerID = team2
                     team1Stats.losses += 1
                     team2Stats.wins += 1
+                    for player_stats in Player_Sport_Stats.objects.filter(playerID__teamID=team1):
+                        player_stats.losses += 1
+                        player_stats.save()
+                    for player_stats in Player_Sport_Stats.objects.filter(playerID__teamID=team2):
+                        player_stats.wins += 1
+                        player_stats.save()
             else:
-                if team1Stats.draws != None:
-                    team1Stats.draws += 1
-                if team2Stats.draws != None:
-                    team2Stats.draws += 1
+                if team1Stats.draws == None: team1Stats.draws = 0
+                if team2Stats.draws == None: team2Stats.draws = 0
+                team1Stats.draws += 1
+                team2Stats.draws += 1
+                for player_stats in Player_Sport_Stats.objects.filter(playerID__teamID=team1):
+                    player_stats.draws += 1
+                    player_stats.save()
+                for player_stats in Player_Sport_Stats.objects.filter(playerID__teamID=team2):
+                    player_stats.draws += 1
+                    player_stats.save()
             league = League.objects.get(id=pk)
             stats = Tracks.objects.filter(sport=league.sportID)
             for stat in stats:

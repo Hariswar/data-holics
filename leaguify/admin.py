@@ -8,4 +8,7 @@ admin.site.register(Social_Media)
 admin.site.register(League)
 admin.site.register(Game)
 admin.site.register(Player)
+admin.site.register(Player_Sport_Stats)
+admin.site.register(Team_Sport_Stats)
+admin.site.register(Sport_Stats)
 # Register your models here.

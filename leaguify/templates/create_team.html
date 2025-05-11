@@ -44,7 +44,7 @@
 <a href="{{request.META.HTTP_REFERER}}">Go Back</a>
 {% endif %}
 {% else %}
-<form method='post' action="{% url 'create_new_team' %}" class="text_center">
+<form method='post' action="" class="text_center">
     {% csrf_token %}
     <input type="text" name="teamName" placeholder="Team Name" maxlength="32" required>
     

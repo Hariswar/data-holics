@@ -31,7 +31,7 @@
 {% endif %}
 
 <h3>Social Media</h3>
-{% if social_media %}
+<!-- {% if social_media %}
 <table>
     <tr>
         <th>Platform</th>
@@ -44,14 +44,34 @@
     </tr>
     {% endfor %}
 </table>
-{% endif %}
+{% endif %} -->
+
 <a href="{% url 'add_player_social_media' %}"><button>Add Social Media</button></a>
 
 <hr>
 
+<h3>User Statistics</h3>
+
 {% if stats %}
     {% for stat in stats %}
-        <p>{{ stat }}</p>
+        <table>
+            <tr>
+                <th>Sport</th>
+                <th>W</th>
+                <th>L</th>
+                {% if stat.total_draws %}
+                    <th>D</th>
+                {% endif %}
+            </tr>
+            <tr>
+                <td>{{ stat.playerID__teamID__leagueID__sportID__sportName }}</td>
+                <td>{{ stat.total_wins }}</td>
+                <td>{{ stat.total_losses }}</td>
+                {% if stat.total_draws %}
+                    <td>{{ stat.total_draws }}</td>
+                {% endif %}
+            </tr>
+        </table>
     {% endfor %}
 {% endif %}
 
