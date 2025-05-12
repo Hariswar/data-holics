@@ -1,14 +1,34 @@
 {% extends 'master_template.html' %}
 
 {% block title %}
+{% if type == 'edit' %}
+<title>Leaguify | Player | Edit Social Media</title>
+{% else %}
 <title>Leaguify | Player | Add Social Media</title>
+{% endif %}
 {% endblock %}
 
 {% block header %}
+{% if type == 'edit' %}
+<h1>Edit Social Media</h1>
+{% else %}
 <h1>Add Social Media</h1>
+{% endif %}
 {% endblock %}
 
 {% block body %}
+{% if type == 'edit' %}
+<form method="post" action="">
+    {% csrf_token %}
+    <label for="type">Platform: </label>
+    <input type="text" placeholder="Instagram" name="type" value="{{ctype}}" required>
+    <br>
+    <label for="userName">Username: </label>
+    <input type="text" placeholder="socialmedia123" name="userName" value="{{cuname}}" required>
+    <br>
+    <input type="submit" value="Update">
+</form>
+{% else %}
 <form method="post" action="">
     {% csrf_token %}
     <label for="type">Platform: </label>
@@ -19,4 +39,5 @@
     <br>
     <input type="submit">
 </form>
+{% endif %}
 {% endblock %}

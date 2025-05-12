@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.views.generic.detail import DetailView
 from django.views.generic.detail import DetailView
 from django.db.models import Q, Avg, Sum, Count
+from django.http import HttpResponseRedirect
 from .models import *
 from .forms import *
 
@@ -83,8 +84,8 @@ class LeagueDetailView(DetailView):
             if players.count() > 0:
                 context['team_creatable'] = False
                 break
-        else:
-            context['team_creatable'] = True
+            else:
+                context['team_creatable'] = True
         context['teams'] = [{ "team": t, "stats": Team_Sport_Stats.objects.get(teamID=t) } for t in teams]
         context['games'] = games
         return context
@@ -442,7 +443,7 @@ def add_player_social_media(request):
         players = Player.objects.filter(userID_id=user.id)
         for player in players.iterator():
             sm = Social_Media.objects.create(type=platform, userName=userName, playerID_id=player.id)
-        return redirect('user_home')
+        return HttpResponseRedirect('user_home')
 
 @csrf_protect
 def add_team_social_media(request, pk):
@@ -610,5 +611,51 @@ def edit_team(request, pk):
         except:
             pass
     return redirect('all_leagues')
+def user_profile(request, pk):
+    user = Custom_User.objects.get(id=pk)
+    player = Player.objects.get(userID=user)
+    context = {}
+    if request.method == 'GET':
+        template = loader.get_template('user_profile.html')
+        context['ufname'] = user.firstName
+        context['umname'] = user.middleName
+        context['ulname'] = user.lastName
+        context['uaddress'] = user.emailAddress
+        context['smss'] = Social_Media.objects.filter(playerID=player)
+        return HttpResponse(template.render(context, request))
+    elif request.method == 'POST':
+        nfname = request.POST.get('fname')
+        nmname = request.POST.get('mname')
+        nlname = request.POST.get('lname')
+        user.firstName = nfname
+        user.middleName = nmname
+        user.lastName = nlname
+        user.save()
+        return redirect('user_profile', pk)
+    return redirect('user_home')
 
+def delete_sm(request, pk):
+    sm = Social_Media.objects.get(id = pk)
+    if request.method == 'POST':
+        sm.delete() 
+        return redirect('user_home')
+    return render(request, 'delete.html', {'obj':sm.userName})
 
+def edit_sm(request, pk):
+    sm = Social_Media.objects.get(id=pk)
+    user = Custom_User.objects.get(id=sm.playerID.userID.id)
+    if request.method == 'GET':
+        context = {}
+        template = loader.get_template('add_player_social_media.html')
+        context['cuname'] = sm.userName
+        context['ctype'] = sm.type
+        context['type'] = 'edit'
+        return HttpResponse(template.render(context, request))
+    elif request.method == 'POST':
+        nuname = request.POST.get('userName')
+        ntype = request.POST.get('type')
+        sm.userName = nuname
+        sm.type = ntype
+        sm.save()
+        return redirect('user_profile', user.id)
+    return redirect('user_profile', user.id)

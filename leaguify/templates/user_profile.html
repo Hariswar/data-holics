@@ -1,0 +1,47 @@
+{% extends 'master_template.html' %}
+
+{% block title %}
+<title>Leaguify | User Profile</title>
+{% endblock %}
+
+{% block header %}
+<h1>{{ufname}}'s Profile</h1>
+{% endblock %}
+
+{% block body %}
+
+{% if message %}
+<p class="error">{{ message }}</p>
+{% endif %}
+
+<p>Email: {{uaddress}}</p>
+<form method="POST">
+    {% csrf_token %}
+    <label for="fname">First Name:</label>
+    <input type="text" name="fname" placeholder="First Name" value="{{ufname}}" required> <br>
+    <label for="mname">Middle Name:</label>
+    <input type="text" name="mname" placeholder="First Name" value="{{umname}}" required><br>
+    <label for="lname">Last Name: </label>
+    <input type="text" name="lname" placeholder="First Name" value="{{ulname}}" required><br>
+    <input type="submit" value="Update Profile">
+</form>
+<p>Social Media: </p>
+<table>
+    <tr>
+        <th>UserName</th>
+        <th>Site</th>
+        <th>Actions</th>
+    </tr>
+{% for s in smss %}
+<tr>
+    <td>{{s.type}}</td>
+    <td>{{s.userName}}</td>
+    <td><a href="{% url 'delete_sm' s.id %}">Delete</a> <a href="{% url 'edit_sm' s.id %}">Edit</a></td>
+</tr>
+{% endfor %}
+</table>
+<a href="{% url 'add_player_social_media' %}"><button>Add Social Media</button></a>
+
+
+
+{% endblock %}

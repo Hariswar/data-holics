@@ -27,4 +27,7 @@ urlpatterns = [
     path("delete/team/<pk>/", views.delete_team, name="delete_team"),
     path("update_league/<pk>/", views.updateLeague, name="update_league"),
     path("update_team/<pk>/", views.edit_team, name="update_team"),
+    path("user_profile/<pk>/", views.user_profile, name="user_profile"),
+    path("delete_sm/<pk>/", views.delete_sm, name="delete_sm"),
+    path("edit_sm/<pk>/", views.edit_sm, name="edit_sm"),
 ]
