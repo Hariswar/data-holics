@@ -100,7 +100,19 @@ class TeamDetailView(DetailView):
         context['social_media'] = social_media
         stats = Team_Sport_Stats.objects.get(teamID_id=context['object'].id)
         context['stats'] = stats
-        additional_stats = json.loads(stats.additionalStats)
+        additional_stats:dict
+        try:
+            additional_stats = json.loads(stats.additionalStats)
+        except Exception as e:
+            ads = {}
+            sport = context['object'].leagueID.sportID
+            tracks = Tracks.objects.filter(sport=sport)
+            for i in tracks:
+                ads[i.statisticName] = 0
+            stats.additionalStats = json.dumps(ads).encode('utf-8')
+            stats.save()
+            additional_stats = json.loads(stats.additionalStats)
+
         context['additional_stats'] = additional_stats
         if players.filter(id=self.request.user.id).count() > 0:
             context['team_joinable'] = False
@@ -269,9 +281,11 @@ def user_home(request):
     stats = []
     additionalStats = []
     social_media = Social_Media.objects.filter(playerID__userID_id=user.id).values('userName', 'type')
-    ss = Player_Sport_Stats.objects.filter(playerID__userID_id=user.id)
-    ss= ss.values('playerID__teamID__leagueID__sportID__sportName').annotate(total_wins=Sum("wins"), total_losses=Sum("losses"), total_draws=Sum("draws"))
-    # for i in ss:
+    sport_stats = Player_Sport_Stats.objects.filter(playerID__userID_id=user.id)
+    ss = sport_stats.values('playerID__teamID__leagueID__sportID__sportName').annotate(total_wins=Sum("wins"), total_losses=Sum("losses"), total_draws=Sum("draws"))
+    for s in sport_stats:
+        if s.additionalStats == None:
+            s.additionalStats = json.dumps({})
     print(ss)
     teamIDs = players.values('teamID_id')
     teams = []
