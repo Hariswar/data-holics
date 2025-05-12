@@ -81,7 +81,7 @@ class LeagueDetailView(DetailView):
                 additional_stats = json.loads(team.additionalStats)
             except Exception as e:
                 ads = {}
-                sport = context['object'].leagueID.sportID
+                sport = context['object'].sportID
                 tracks = Tracks.objects.filter(sport=sport)
                 for i in tracks:
                     ads[i.statisticName] = 0
@@ -94,7 +94,7 @@ class LeagueDetailView(DetailView):
                 additional_stats = json.loads(player.additionalStats)
             except Exception as e:
                 ads = {}
-                sport = context['object'].leagueID.sportID
+                sport = context['object'].sportID
                 tracks = Tracks.objects.filter(sport=sport)
                 for i in tracks:
                     ads[i.statisticName] = 0
