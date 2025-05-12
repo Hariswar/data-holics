@@ -643,7 +643,7 @@ def edit_team(request, pk):
             pass
     return redirect('all_leagues')
 def user_profile(request, pk):
-    user = Custom_User.objects.get(id=pk)
+    user = Custom_User.objects.get(emailAddress=pk)
     players = Player.objects.filter(userID=user)
     context = {}
     if request.method == 'GET':

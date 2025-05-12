@@ -16,7 +16,7 @@
     <small><a href="{% url 'create_league' %}">Create League</a></small>
     <small><a href="{% url 'create_sport' %}">Create Sport</a></small>
     <hr>
-    <small><a href="{% url 'user_profile' user.id%}">{{ user }}</a></small>
+    <small><a href="{% url 'user_profile' user.username%}">{{ user }}</a></small>
     <small><a href="{% url 'log_out' %}">Log Out</a></small>
     {% else %}
     <hr>
