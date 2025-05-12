@@ -74,6 +74,34 @@ class LeagueDetailView(DetailView):
         plays = Plays.objects.filter(teamID__in=teams)
         games = Game.objects.filter(id__in=plays.values('gameID'))
         games = games.values()
+        teams = Team_Sport_Stats.objects.filter(teamID__leagueID_id=context['object'].id)
+        players = Player_Sport_Stats.objects.filter(playerID__leagueID_id=context['object'].id)
+        for team in teams:
+            try:
+                additional_stats = json.loads(team.additionalStats)
+            except Exception as e:
+                ads = {}
+                sport = context['object'].leagueID.sportID
+                tracks = Tracks.objects.filter(sport=sport)
+                for i in tracks:
+                    ads[i.statisticName] = 0
+                team.additionalStats = json.dumps(ads).encode('utf-8')
+                team.save()
+                # additional_stats = json.loads(team.additionalStats)
+        
+        for player in players:
+            try:
+                additional_stats = json.loads(player.additionalStats)
+            except Exception as e:
+                ads = {}
+                sport = context['object'].leagueID.sportID
+                tracks = Tracks.objects.filter(sport=sport)
+                for i in tracks:
+                    ads[i.statisticName] = 0
+                player.additionalStats = json.dumps(ads).encode('utf-8')
+                player.save()
+                # additional_stats = json.loads(player.additionalStats)
+
         for game in games:
             game['teams'] = []
             p = Plays.objects.filter(gameID_id=game['id'])
