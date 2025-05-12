@@ -52,8 +52,9 @@
     <a href="create_team">
         <button>Create Team</button>
     </a>
-    {% endif %}
+    {% else %}
     <a href="{% url 'delete_league' object.id%}">Delete League</a>
     <br>
     <a href="{% url 'update_league' object.id%}">Edit League</a>
+    {% endif %}
 {% endblock %}

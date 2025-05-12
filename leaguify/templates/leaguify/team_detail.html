@@ -69,7 +69,7 @@
         </table>
     {% endif %}
     
-    {% if user.is_authenticated and not team_joinable %}
+    {% if user.is_authenticated and team_editable %}
     <a href="add_social_media">
         <button>Add Social Media</button>
     </a>
