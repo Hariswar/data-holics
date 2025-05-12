@@ -616,7 +616,7 @@ def edit_team(request, pk):
     return redirect('all_leagues')
 def user_profile(request, pk):
     user = Custom_User.objects.get(id=pk)
-    player = Player.objects.get(userID=user)
+    players = Player.objects.filter(userID=user)
     context = {}
     if request.method == 'GET':
         template = loader.get_template('user_profile.html')
@@ -624,7 +624,10 @@ def user_profile(request, pk):
         context['umname'] = user.middleName
         context['ulname'] = user.lastName
         context['uaddress'] = user.emailAddress
-        context['smss'] = Social_Media.objects.filter(playerID=player)
+        smss = []
+        for player in players:
+            smss += Social_Media.objects.filter(playerID=player)
+        context['smss'] = smss
         return HttpResponse(template.render(context, request))
     elif request.method == 'POST':
         nfname = request.POST.get('fname')
@@ -653,12 +656,35 @@ def edit_sm(request, pk):
         context['cuname'] = sm.userName
         context['ctype'] = sm.type
         context['type'] = 'edit'
+        context['uid'] = user
         return HttpResponse(template.render(context, request))
     elif request.method == 'POST':
+        nea = request.POST.get('email')
         nuname = request.POST.get('userName')
         ntype = request.POST.get('type')
+        user.emailAddress = nea
         sm.userName = nuname
         sm.type = ntype
         sm.save()
+        user.save()
         return redirect('user_profile', user.id)
     return redirect('user_profile', user.id)
+def change_password(request, pk):
+    user = Custom_User.objects.get(id=pk)
+    context = {}
+    if request.method == 'GET':
+        template = loader.get_template('change_password.html')
+        context = {'cpass' : user.password}
+        return HttpResponse(template.render(context, request))
+    elif request.method == 'POST':
+        context = {}
+        npass1 = request.POST.get('pass1')
+        npass2 = request.POST.get('pass2')
+        try: 
+            if npass1 != npass2: raise Exception("Your Passwords Are Not The Same")
+            user.password = npass1
+            user.save()
+            return redirect('user_home')
+        except Exception as e:
+            context["message"] = e
+    return render(request, 'change_password.html', context)
