@@ -74,9 +74,9 @@ class LeagueDetailView(DetailView):
         plays = Plays.objects.filter(teamID__in=teams)
         games = Game.objects.filter(id__in=plays.values('gameID'))
         games = games.values()
-        teams = Team_Sport_Stats.objects.filter(teamID__leagueID_id=context['object'].id)
+        teamstats = Team_Sport_Stats.objects.filter(teamID__leagueID_id=context['object'].id)
         players = Player_Sport_Stats.objects.filter(playerID__teamID__leagueID_id=context['object'].id)
-        for team in teams:
+        for team in teamstats:
             try:
                 additional_stats = json.loads(team.additionalStats)
             except Exception as e:
