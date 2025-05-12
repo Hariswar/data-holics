@@ -697,8 +697,8 @@ def edit_sm(request, pk):
         sm.type = ntype
         sm.save()
         user.save()
-        return redirect('user_profile', user.id)
-    return redirect('user_profile', user.id)
+        return redirect('user_profile', user.emailAddress)
+    return redirect('user_profile', user.emailAddress)
 def change_password(request, pk):
     user = Custom_User.objects.get(id=pk)
     context = {}
