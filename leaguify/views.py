@@ -75,7 +75,7 @@ class LeagueDetailView(DetailView):
         games = Game.objects.filter(id__in=plays.values('gameID'))
         games = games.values()
         teams = Team_Sport_Stats.objects.filter(teamID__leagueID_id=context['object'].id)
-        players = Player_Sport_Stats.objects.filter(playerID__leagueID_id=context['object'].id)
+        players = Player_Sport_Stats.objects.filter(playerID__teamID__leagueID_id=context['object'].id)
         for team in teams:
             try:
                 additional_stats = json.loads(team.additionalStats)
@@ -658,12 +658,14 @@ def user_profile(request, pk):
         context['smss'] = smss
         return HttpResponse(template.render(context, request))
     elif request.method == 'POST':
+        nemail = request.POST.get('email')
         nfname = request.POST.get('fname')
         nmname = request.POST.get('mname')
         nlname = request.POST.get('lname')
         user.firstName = nfname
         user.middleName = nmname
         user.lastName = nlname
+        user.emailAddress = nemail
         user.save()
         return redirect('user_profile', pk)
     return redirect('user_home')
