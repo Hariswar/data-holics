@@ -114,12 +114,12 @@ class TeamDetailView(DetailView):
             additional_stats = json.loads(stats.additionalStats)
 
         context['additional_stats'] = additional_stats
-        if players.filter(id=self.request.user.id).count() > 0:
+        if players.filter(userID__emailAddress=self.request.user.username).count() > 0:
             context['team_joinable'] = False
             context['team_editable'] = True
         else:
             context['team_editable'] = False
-            players2 = Player.objects.filter(userID_id=self.request.user.id, teamID_id=context['object'].id)
+            players2 = Player.objects.filter(userID__emailAddress=self.request.user.username, teamID__leagueID=context['object'].leagueID)
             if players2.count() > 0:
                 context['team_joinable'] = False
             else:
@@ -484,7 +484,7 @@ def create_new_league(request):
 @csrf_protect 
 def join_team(request, pk):
     team = Team.objects.get(pk=pk)
-    user = Custom_User.objects.get(id=request.user.id)
+    user = Custom_User.objects.get(emailAddress=request.user.username)
     print(user, team)
     player = Player.objects.create(userID=user, teamID=team)
     return redirect('.')
@@ -537,29 +537,32 @@ def updateLeague(request, pk):
             league.leagueName = request.POST.get('leagueName')
             league.sportID_id = request.POST.get('sport')
             league.save()
-            teamName = request.POST.get('yourTeamName')
-            if teamName != "":
-                try:
-                    team = Team.objects.get(teamName=teamName)
-                except:
-                    try:
-                        stats = {}
-                        for name in Tracks.objects.filter(sport_id=league.sportID):
-                            stats[name.statisticName] = 0
-                        empty = json.dumps(stats).encode('utf-8')
-                        team = Team.objects.create(teamName=teamName, leagueID_id = league.id)
-                        team_stats = Team_Sport_Stats.objects.create(teamID_id=team.id, additionalStats=empty)
-                        player = Player.objects.create(teamID_id=team.id, userID_id=user.id)
-                        player_stats = Player_Sport_Stats.objects.create(playerID_id=player.id, additionalStats=empty)
-                        return redirect('user_home')
-                    except Exception as e:
-                        print(e)
-                        redirect('create_league')
+            # teamName = request.POST.get('yourTeamName')
+            # teamName = ""
+            # if teamName != "":
+            #     try:
+            #         team = Team.objects.get(teamName=teamName)
+            #     except:
+            #         try:
+            #             stats = {}
+            #             for name in Tracks.objects.filter(sport_id=league.sportID):
+            #                 stats[name.statisticName] = 0
+            #             empty = json.dumps(stats).encode('utf-8')
+            #             team = Team.objects.create(teamName=teamName, leagueID_id = league.id)
+            #             team_stats = Team_Sport_Stats.objects.create(teamID_id=team.id, additionalStats=empty)
+            #             player = Player.objects.create(teamID_id=team.id, userID_id=user.id)
+            #             player_stats = Player_Sport_Stats.objects.create(playerID_id=player.id, additionalStats=empty)
+            #             return redirect('user_home')
+            #         except Exception as e:
+            #             print(e)
+            #             redirect('create_league')
         except Exception as e:
             print(e)
             return redirect('create_league')
         return redirect('user_home')
     return redirect('user_home')
+
+@login_required
 def edit_team(request, pk):
     team = Team.objects.get(id=pk)
     user = Custom_User.objects.get(emailAddress=request.user.username)
@@ -597,7 +600,7 @@ def edit_team(request, pk):
             team.teamName = n_name
             team.leagueID = uleague
             team.save()
-            nuser = Custom_User.objects.get(id=n_user)
+            nuser = Custom_User.objects.get(emailAddress=n_user)
             if nuser.id != user.id:
                 try:
                     uplay = Player.objects.get(userID=nuser.id, teamID__leagueID=uleague.id)
