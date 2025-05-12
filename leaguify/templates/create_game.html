@@ -14,7 +14,7 @@
 <p class="error">{{ message }}</p>
 {% endif %}
 
-<form method ="POST" action="">
+<form method ="POST" action="" onload="change_players()">
     {% csrf_token %}
     <label for="team1">Team 1: </label>
     <select name="team1">

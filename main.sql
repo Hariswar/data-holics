@@ -85,11 +85,3 @@
 --     FOREIGN KEY (rootStatsID) REFERENCES leaguify_sport_stats(sportStatID) ON DELETE CASCADE ON UPDATE CASCADE
  --);
 
-INSERT INTO leaguify_sport 
-values (0, 'baseball', FALSE),
-(1, 'football', FALSE),
-(2, 'ice hockey', FALSE),
-(3, 'table tennis', TRUE),
-(4, 'tennis', TRUE),
-(5, 'cricket', FALSE),
-(6, 'basketball', FALSE);
