@@ -10,7 +10,21 @@
 
 ### Database Migration
 
-- Full database migration should not be necessary because all changes made to our database setup will be done in SQL. 
+- Full database migration should not be necessary because all changes made to our database setup will be done in SQL.
+
+### Steps To Install The System On Another Computer
+
+- First, we must clone the git repository.
+- Next, we have to setup the virtual environment.
+    - python3 -m venv venv.
+    - source venv/bin/active.
+- Then, we must install Django.
+    - pip install Django
+- Then we need to run the migrations.
+    - python manage.py migrate
+- Finally, we can run the server.
+    - python manage.py runserver
+- If you follow these steps, you should be able to run our website with no issues. 
 
 ## Creating Models, Pages, and Database Functions
 
